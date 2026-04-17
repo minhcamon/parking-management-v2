@@ -143,5 +143,7 @@
             document.querySelector('.sidebar').classList.toggle('open');
         });
     </script>
+
+    @include('components.toast')
 </body>
 </html>

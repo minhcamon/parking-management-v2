@@ -10,11 +10,11 @@
     .pos-grid {
         display: grid;
         /* Đổi từ 1fr 400px sang 6fr 4fr để chia đúng tỉ lệ 6-4 */
-        grid-template-columns: 6fr 4fr; 
+        grid-template-columns: 6fr 4fr;
         gap: 1.5rem;
         height: calc(100vh - 140px);
     }
-    
+
     @media (max-width: 1024px) {
         .pos-grid {
             /* Giữ nguyên cái này để hiển thị 1 cột trên màn hình nhỏ */
@@ -121,7 +121,7 @@
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
-        height: 100%; 
+        height: 100%;
     }
 
     .info-widget {
@@ -160,11 +160,11 @@
         min-height: 200px;
         padding-right: 10px;
     }
-    
+
     .history-list::-webkit-scrollbar { width: 6px; }
     .history-list::-webkit-scrollbar-track { background: transparent; }
     .history-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
-    
+
     .history-item {
         display: flex;
         gap: 1rem;
@@ -183,73 +183,73 @@
 
 @section('content')
 <div class="pos-grid" x-data="{ mode: 'checkin' }">
-    
     <!-- LEFT PANEL: SCAN AREA -->
     <div class="scan-panel premium-card">
         <div class="tab-nav">
-            <button class="tab-btn" 
-                    :class="mode === 'checkin' ? 'active-in' : ''" 
+            <button class="tab-btn"
+                    :class="mode === 'checkin' ? 'active-in' : ''"
                     @click="mode = 'checkin'; $nextTick(() => $refs.scanInput.focus())">
                 <i class="ph-fill ph-arrow-circle-right"></i> CHECK IN
             </button>
-            <button class="tab-btn" 
-                    :class="mode === 'checkout' ? 'active-out' : ''" 
+            <button class="tab-btn"
+                    :class="mode === 'checkout' ? 'active-out' : ''"
                     @click="mode = 'checkout'; $nextTick(() => $refs.scanInput.focus())">
                 <i class="ph-fill ph-arrow-circle-left"></i> CHECK OUT
             </button>
         </div>
 
         <div class="grow flex flex-col justify-center">
-            
-            <form action="#" method="POST" @submit.prevent="console.log('Submitted: ' + $refs.scanInput.value)">
+
+            <form method="POST"
+                  :action="mode === 'checkin' ? '{{ route('staff.check-in') }}' : '{{ route('staff.check-out') }}'">
                 @csrf
                 <input type="hidden" name="action_type" x-model="mode">
-                
+
                 <div class="flex flex-col gap-4 text-left min-h-[200px]">
                     <!-- RFID Scan -->
                     <div>
                         <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">1. MÃ THẺ (RFID)</label>
-                        <input type="text" 
-                            name="rfid_code" 
-                            class="input-giant p-4 text-[1.5rem] rounded-xl mb-0" 
-                            placeholder="QUẸT THẺ VÀO ĐÂY..." 
+                        <input type="text"
+                            name="rfid_code"
+                            class="input-giant p-4 text-[1.5rem] rounded-xl mb-0"
+                            placeholder="QUẸT THẺ VÀO ĐÂY..."
                             x-ref="scanInput"
                             autofocus
                             autocomplete="off">
                     </div>
 
                     <div class="flex flex-col gap-4">
-    
+
     <div>
         <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">2. BIỂN SỐ XE</label>
-        <input type="text" 
-            name="license_plate" 
-            class="form-input" 
+        <input type="text"
+            name="license_plate"
+            class="form-input"
             placeholder="Nhập biển số xe (VD: 29A12345)...">
     </div>
 
-    <div x-show="mode === 'checkin'" 
+    <div x-show="mode === 'checkin'"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 transform -translate-y-2"
          x-transition:enter-end="opacity-100 transform translate-y-0"
          x-transition:leave="transition ease-in duration-100"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         style="display: none;" 
+         style="display: none;"
          x-init="$el.style.display = 'block'">
-         
+
         <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">3. LOẠI XE</label>
         <select name="vehicle_type_id" class="form-input">
             <option value="1">Xe Máy (MOTO)</option>
             <option value="2">Ô tô (CAR)</option>
         </select>
     </div>
-    
+
 </div>
                 </div>
 
                 <button type="submit" class="btn-gradient w-full mt-6 justify-center text-[1.1rem] p-4 rounded-xl">
-                    <i class="ph-fill ph-check-circle text-[1.5rem]"></i> 
+                    <i class="ph-fill ph-check-circle text-[1.5rem]"></i>
                     <span class="font-bold">XÁC NHẬN <span x-text="mode === 'checkin' ? 'VÀO BÃI' : 'RA BÃI'"></span></span>
                 </button>
 
@@ -260,13 +260,13 @@
 
     <!-- RIGHT PANEL: WIDGETS -->
     <div class="widget-panel">
-        
+
         <!-- Widget 1: Parking Slots -->
         <div class="info-widget">
             <div class="widget-title">
                 <i class="ph-fill ph-garage"></i> LIVE AVAILABILITY
             </div>
-            
+
             <!-- Mock Data -->
             <div class="slot-row">
                 <div class="flex items-center gap-2">
@@ -296,7 +296,7 @@
             <div class="widget-title">
                 <i class="ph-fill ph-clock-counter-clockwise"></i> RECENT ACTIVITY
             </div>
-            
+
             <div class="history-list">
                 @for($i=0; $i<6; $i++)
                 <div class="history-item">

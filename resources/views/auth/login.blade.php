@@ -59,5 +59,7 @@
     </div>
 
     <script src="{{ asset('assets/js/theme-switcher.js') }}"></script>
+
+    @include('components.toast')
 </body>
 </html>

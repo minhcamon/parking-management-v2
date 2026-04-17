@@ -28,7 +28,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Parking Site (Vehicle Types & Cards)
     Route::get('/parking-site', [ParkingSiteController::class, 'index'])->name('parking-site.index');
-    
+
     // User & Staff Management
     Route::get('/staff', [StaffManagerController::class, 'index'])->name('staff.index');
 
@@ -44,7 +44,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('staff')->name('staff.')->group(function () {
     // Dashboard (Check In / Check Out UI)
     Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
-    
+
+    // Check in - Out
+    Route::post('/check-in', [StaffDashboardController::class, 'checkIn'])->name('check-in');
+    Route::post('/check-out', [StaffDashboardController::class, 'checkOut'])->name('check-out');
+
     // Operations (Search, Register Pass)
     Route::get('/operations/search', [OperationController::class, 'search'])->name('operations.search');
     Route::get('/operations/register-pass', [OperationController::class, 'registerPass'])->name('operations.register-pass');
