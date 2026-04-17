@@ -199,30 +199,29 @@
             </button>
         </div>
 
-        <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+        <div class="grow flex flex-col justify-center">
             
             <form action="#" method="POST" @submit.prevent="console.log('Submitted: ' + $refs.scanInput.value)">
                 @csrf
                 <input type="hidden" name="action_type" x-model="mode">
                 
-                <div style="display: flex; flex-direction: column; gap: 1rem; text-align: left; min-height: 200px;">
+                <div class="flex flex-col gap-4 text-left min-h-[200px]">
                     <!-- RFID Scan -->
                     <div>
-                        <label style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">1. MÃ THẺ (RFID)</label>
+                        <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">1. MÃ THẺ (RFID)</label>
                         <input type="text" 
                             name="rfid_code" 
-                            class="input-giant" 
-                            style="padding: 1rem; font-size: 1.5rem; border-radius: 12px; margin-bottom: 0;"
+                            class="input-giant p-4 text-[1.5rem] rounded-xl mb-0" 
                             placeholder="QUẸT THẺ VÀO ĐÂY..." 
                             x-ref="scanInput"
                             autofocus
                             autocomplete="off">
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="flex flex-col gap-4">
     
     <div>
-        <label style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">2. BIỂN SỐ XE</label>
+        <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">2. BIỂN SỐ XE</label>
         <input type="text" 
             name="license_plate" 
             class="form-input" 
@@ -239,7 +238,7 @@
          style="display: none;" 
          x-init="$el.style.display = 'block'">
          
-        <label style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">3. LOẠI XE</label>
+        <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">3. LOẠI XE</label>
         <select name="vehicle_type_id" class="form-input">
             <option value="1">Xe Máy (MOTO)</option>
             <option value="2">Ô tô (CAR)</option>
@@ -249,9 +248,9 @@
 </div>
                 </div>
 
-                <button type="submit" class="btn-gradient" style="width: 100%; margin-top: 1.5rem; justify-content: center; font-size: 1.1rem; padding: 1rem; border-radius: 12px;">
-                    <i class="ph-fill ph-check-circle" style="font-size: 1.5rem;"></i> 
-                    <span style="font-weight: 700;">XÁC NHẬN <span x-text="mode === 'checkin' ? 'VÀO BÃI' : 'RA BÃI'"></span></span>
+                <button type="submit" class="btn-gradient w-full mt-6 justify-center text-[1.1rem] p-4 rounded-xl">
+                    <i class="ph-fill ph-check-circle text-[1.5rem]"></i> 
+                    <span class="font-bold">XÁC NHẬN <span x-text="mode === 'checkin' ? 'VÀO BÃI' : 'RA BÃI'"></span></span>
                 </button>
 
             </form>
@@ -270,30 +269,30 @@
             
             <!-- Mock Data -->
             <div class="slot-row">
-                <div style="display:flex; align-items:center; gap: 8px;">
-                    <i class="ph-fill ph-motorcycle" style="font-size: 1.5rem; color: var(--text-muted)"></i>
+                <div class="flex items-center gap-2">
+                    <i class="ph-fill ph-motorcycle text-[1.5rem] text-[var(--text-muted)]"></i>
                     <strong>Xe Máy</strong>
                 </div>
                 <div>
-                    <span style="font-size: 1.2rem; font-weight:bold; color: #10b981;">185</span>
-                    <span style="color: var(--text-muted)">/ 300</span>
+                    <span class="text-[1.2rem] font-bold text-[#10b981]">185</span>
+                    <span class="text-[var(--text-muted)]">/ 300</span>
                 </div>
             </div>
 
             <div class="slot-row">
-                <div style="display:flex; align-items:center; gap: 8px;">
-                    <i class="ph-fill ph-car" style="font-size: 1.5rem; color: var(--text-muted)"></i>
+                <div class="flex items-center gap-2">
+                    <i class="ph-fill ph-car text-[1.5rem] text-[var(--text-muted)]"></i>
                     <strong>Ô Tô</strong>
                 </div>
                 <div>
-                    <span style="font-size: 1.2rem; font-weight:bold; color: #f59e0b;">5</span>
-                    <span style="color: var(--text-muted)">/ 50</span>
+                    <span class="text-[1.2rem] font-bold text-[#f59e0b]">5</span>
+                    <span class="text-[var(--text-muted)]">/ 50</span>
                 </div>
             </div>
         </div>
 
         <!-- Widget 2: Recent History -->
-        <div class="info-widget" style="flex-grow: 1; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="info-widget grow flex flex-col overflow-hidden">
             <div class="widget-title">
                 <i class="ph-fill ph-clock-counter-clockwise"></i> RECENT ACTIVITY
             </div>
@@ -306,14 +305,14 @@
                     @else
                         <div class="badge-out">OUT</div>
                     @endif
-                    <div style="flex-grow: 1;">
-                        <div style="font-weight: 500;">RFID_000{{$i+1}}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">29A1-1234{{$i}} • Xe Máy</div>
+                    <div class="grow">
+                        <div class="font-medium">RFID_000{{$i+1}}</div>
+                        <div class="text-[0.8rem] text-[var(--text-muted)]">29A1-1234{{$i}} • Xe Máy</div>
                     </div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); text-align:right;">
+                    <div class="text-[0.8rem] text-[var(--text-muted)] text-right">
                         Just now<br>
                         @if($i % 2 != 0)
-                            <span style="color: #10b981; font-weight:bold;">+5,000đ</span>
+                            <span class="text-[#10b981] font-bold">+5,000đ</span>
                         @endif
                     </div>
                 </div>

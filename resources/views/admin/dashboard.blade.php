@@ -139,23 +139,23 @@
         <div class="stat-label">Total Revenue</div>
         {{-- Format number to currency style VNĐ --}}
         <div class="stat-value">{{ number_format($totalRevenue, 0, ',', '.') }} đ</div>
-        <div style="color: var(--text-muted); font-size: 0.85rem;">
-            <i class="ph ph-trend-up" style="color: #34d399"></i> +12% from last month
+        <div class="text-[var(--text-muted)] text-[0.85rem]">
+            <i class="ph ph-trend-up text-[#34d399]"></i> +12% from last month
         </div>
     </div>
 
     <!-- 2. Current Vehicle Slot Remain -->
-    <div class="premium-card" style="grid-column: span 2;">
+    <div class="premium-card col-span-2">
         <div class="icon-box bg-primary-soft">
             <i class="ph-fill ph-car-profile"></i>
         </div>
-        <div class="stat-label" style="justify-content: space-between;">
+        <div class="stat-label justify-between">
             Live Parking Slots
-            <span style="background: rgba(99, 102, 241, 0.1); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; color: var(--accent-primary);">
+            <span class="bg-[#6366f1]/10 px-2.5 py-1 rounded-[20px] text-[0.75rem] text-[var(--accent-primary)]">
                 <i class="ph-fill ph-identification-card"></i> {{ $totalCards }} Cards Total
             </span>
         </div>
-        <div style="margin-top: 1.5rem;">
+        <div class="mt-6">
             @forelse($vehicleTypes as $type)
                 @php
                     $percentage = $type->total_slots > 0 
@@ -163,17 +163,17 @@
                         : 0;
                 @endphp
                 <div class="slot-item">
-                    <div style="width: 80px; font-weight: 500;">{{ $type->name }}</div>
+                    <div class="w-[80px] font-medium">{{ $type->name }}</div>
                     <div class="progress-wrapper">
                         <div class="progress-bar" style="width: {{ $percentage }}%"></div>
                     </div>
-                    <div style="width: 100px; text-align: right;">
-                        <span style="color: var(--text-main); font-weight:bold;">{{ $type->slot_remain }}</span> 
-                        <span style="color: var(--text-muted);">/ {{ $type->total_slots }}</span>
+                    <div class="w-[100px] text-right">
+                        <span class="text-[var(--text-main)] font-bold">{{ $type->slot_remain }}</span> 
+                        <span class="text-[var(--text-muted)]">/ {{ $type->total_slots }}</span>
                     </div>
                 </div>
             @empty
-                <p style="color: var(--text-muted);">No vehicle types configured yet.</p>
+                <p class="text-[var(--text-muted)]">No vehicle types configured yet.</p>
             @endforelse
         </div>
     </div>
@@ -181,13 +181,13 @@
 
 <div class="stats-grid">
     <!-- 3. Ticket Distribution Chart -->
-    <div class="premium-card" style="grid-column: span 2;">
+    <div class="premium-card col-span-2">
         <div class="icon-box bg-pink-soft">
             <i class="ph-fill ph-pie-chart"></i>
         </div>
         <div class="stat-label">Ticket Distribution (Vé Lượt vs Vé Tháng)</div>
         
-        <div id="ticketChart" style="margin-top: 1rem; min-height: 220px;"></div>
+        <div id="ticketChart" class="mt-4 min-h-[220px]"></div>
     </div>
 </div>
 

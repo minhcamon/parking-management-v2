@@ -10,76 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="{{ asset('assets/css/theme.css') }}">
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .login-card {
-            width: 100%;
-            max-width: 420px;
-            padding: 3rem 2.5rem;
-            text-align: center;
-        }
-        .login-card .brand {
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-        .login-card h2 {
-            margin-bottom: 0.5rem;
-        }
-        .login-card p {
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            font-size: 0.9rem;
-        }
-        .form-group {
-            text-align: left;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
-        .form-control {
-            width: 100%;
-            padding: 0.8rem 1rem 0.8rem 2.5rem;
-            background: rgba(0,0,0,0.02);
-            border: 1px solid var(--header-border);
-            border-radius: 12px;
-            color: var(--text-main);
-            outline: none;
-            transition: border 0.3s, background 0.3s;
-            font-family: inherit;
-        }
-        :root[data-theme="dark"] .form-control {
-            background: rgba(0,0,0,0.2);
-            border-color: rgba(255,255,255,0.1);
-        }
-        .form-control:focus {
-            border-color: var(--accent-primary);
-        }
-        .form-icon {
-            position: absolute;
-            bottom: 0.9rem;
-            left: 1rem;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-        }
-        .btn-full {
-            width: 100%;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-    </style>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="flex justify-center items-center min-h-screen">
     <script>
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -88,37 +22,37 @@
     <div class="ambient-glow"></div>
 
     <!-- Theme Toggle Fixed at Top Right -->
-    <div style="position: absolute; top: 2rem; right: 2rem;">
+    <div class="absolute top-8 right-8">
         <label class="theme-switch">
             <input type="checkbox" id="themeToggle">
             <span class="slider"></span>
         </label>
     </div>
 
-    <div class="premium-card login-card">
-        <div class="brand">
-            <i class="ph-fill ph-car-profile"></i>
-            <h2>ParkGrid</h2>
+    <div class="premium-card w-full max-w-[420px] px-10 py-12 text-center">
+        <div class="brand flex items-center justify-center gap-2 mb-8">
+            <i class="ph-fill ph-car-profile text-[1.8rem] text-[var(--accent-primary)]"></i>
+            <h2 class="m-0 text-[1.4rem]">ParkGrid</h2>
         </div>
-        <h2>Welcome Back</h2>
-        <p>Sign in to access your workspace.</p>
+        <h2 class="mb-2">Welcome Back</h2>
+        <p class="text-[var(--text-muted)] mb-8 text-[0.9rem]">Sign in to access your workspace.</p>
 
         <form action="{{ route('login.post') }}" method="POST">
             @csrf
             
-            <div class="form-group">
-                <label>Email Address</label>
-                <i class="ph ph-envelope-simple form-icon"></i>
-                <input type="email" name="email" class="form-control" placeholder="Enter your email" required autofocus>
+            <div class="text-left mb-6 relative">
+                <label class="block mb-2 text-[0.85rem] font-medium text-[var(--text-muted)]">Email Address</label>
+                <i class="ph ph-envelope-simple absolute bottom-[0.9rem] left-4 text-[var(--text-muted)] text-[1.2rem]"></i>
+                <input type="email" name="email" class="form-control pl-10 w-full" placeholder="Enter your email" required autofocus>
             </div>
 
-            <div class="form-group">
-                <label>Password</label>
-                <i class="ph ph-lock-key form-icon"></i>
-                <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+            <div class="text-left mb-6 relative">
+                <label class="block mb-2 text-[0.85rem] font-medium text-[var(--text-muted)]">Password</label>
+                <i class="ph ph-lock-key absolute bottom-[0.9rem] left-4 text-[var(--text-muted)] text-[1.2rem]"></i>
+                <input type="password" name="password" class="form-control pl-10 w-full" placeholder="Enter your password" required>
             </div>
 
-            <button type="submit" class="btn-gradient btn-full">
+            <button type="submit" class="btn-gradient w-full justify-center mt-4">
                 Sign In <i class="ph ph-arrow-right"></i>
             </button>
         </form>

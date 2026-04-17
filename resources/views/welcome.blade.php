@@ -10,62 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="{{ asset('assets/css/theme.css') }}">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        .hero {
-            max-width: 800px;
-            padding: 2rem;
-            z-index: 10;
-        }
-        .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            margin-bottom: 3rem;
-            line-height: 1.6;
-        }
-        .action-btns {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-        }
-        .btn-outline {
-            padding: 0.8rem 1.5rem;
-            border-radius: 12px;
-            border: 2px solid var(--accent-primary);
-            background: transparent;
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all var(--transition-speed);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .btn-outline:hover {
-            background: rgba(99, 102, 241, 0.1);
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-            transform: scale(1.02);
-        }
-    </style>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="flex flex-col justify-center items-center text-center min-h-screen">
     <script>
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -73,16 +21,16 @@
     </script>
     <div class="ambient-glow"></div>
 
-    <div class="hero">
-        <i class="ph-fill ph-car-profile" style="font-size: 4rem; color: var(--accent-primary); margin-bottom: 1rem;"></i>
-        <h1>ParkGrid</h1>
-        <p>The ultimate modern parking management system. Seamlessly register vehicles, process transactions, and manage your facilities in real time.</p>
+    <div class="hero max-w-[800px] p-8 z-10">
+        <i class="ph-fill ph-car-profile text-[4rem] text-[var(--accent-primary)] mb-4"></i>
+        <h1 class="text-[4rem] mb-6 bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] bg-clip-text text-transparent">ParkGrid</h1>
+        <p class="text-[1.25rem] text-[var(--text-muted)] mb-12 leading-[1.6]">The ultimate modern parking management system. Seamlessly register vehicles, process transactions, and manage your facilities in real time.</p>
         
-        <div class="action-btns">
+        <div class="flex gap-6 justify-center">
             <a href="{{ route('login') }}" class="btn-gradient">
                 <i class="ph ph-sign-in"></i> Get Started
             </a>
-            <a href="#features" class="btn-outline">
+            <a href="#features" class="px-6 py-[0.8rem] rounded-xl border-2 border-[var(--accent-primary)] bg-transparent text-[var(--text-main)] font-['Outfit'] font-semibold text-[1rem] cursor-pointer transition-all duration-300 inline-flex items-center gap-2 no-underline hover:bg-[#6366f1]/10 hover:shadow-[0_10px_20px_-5px_rgba(99,102,241,0.4)] hover:scale-[1.02]">
                 <i class="ph ph-info"></i> Learn More
             </a>
         </div>

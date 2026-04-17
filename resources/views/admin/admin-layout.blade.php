@@ -16,7 +16,7 @@
     <!-- ApexCharts -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <link rel="stylesheet" href="{{ asset('assets/css/theme.css') }}">
+
     <style>
         /* Mobile toggle layout helper */
         .header-content { display: flex; align-items: center; }
@@ -43,6 +43,7 @@
         }
     </style>
     @stack('styles')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     <script>
@@ -81,18 +82,18 @@
             </li>
         </ul>
 
-        <div class="user-profile" id="userProfileBtn" style="margin-top: auto; width: 100%;">
-            <div class="user-profile-trigger" style="border-radius: 12px; padding: 0.8rem 1rem;">
-                <span style="display: flex; align-items:center; gap:10px;">
-                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff" alt="Admin" style="width:32px; height:32px; border-radius:50%;">
+        <div class="user-profile mt-auto w-full" id="userProfileBtn">
+            <div class="user-profile-trigger rounded-xl px-4 py-[0.8rem]">
+                <span class="flex items-center gap-2.5">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff" alt="Admin" class="w-8 h-8 rounded-full">
                     Admin
                 </span>
                 <i class="ph ph-caret-up"></i>
             </div>
             
-            <div class="dropdown-menu" id="userProfileMenu" style="width: 100%;">
+            <div class="dropdown-menu w-full" id="userProfileMenu">
                 <div class="dropdown-item">
-                    <span style="display:flex; align-items:center; gap:8px;">
+                    <span class="flex items-center gap-2">
                         <i class="ph ph-moon"></i> Dark Mode
                     </span>
                     <label class="theme-switch">
@@ -102,14 +103,14 @@
                 </div>
                 <div class="dropdown-divider"></div>
                 <a href="#" class="dropdown-item">
-                    <span style="display:flex; align-items:center; gap:8px;">
+                    <span class="flex items-center gap-2">
                         <i class="ph ph-gear"></i> Settings
                     </span>
                 </a>
-                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
                     @csrf
-                    <button type="submit" class="dropdown-item" style="color: #ef4444; background: transparent; border: none; width: 100%; text-align: left;">
-                        <span style="display:flex; align-items:center; gap:8px;">
+                    <button type="submit" class="dropdown-item text-red-500 bg-transparent border-none w-full text-left">
+                        <span class="flex items-center gap-2">
                             <i class="ph ph-sign-out"></i> Logout
                         </span>
                     </button>

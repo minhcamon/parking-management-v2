@@ -11,7 +11,7 @@
     
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <link rel="stylesheet" href="{{ asset('assets/css/theme.css') }}">
+
     <style>
         .staff-body {
             margin: 0;
@@ -143,6 +143,7 @@
         }
     </style>
     @stack('styles')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="staff-body" x-data="{ isMobileMenuOpen: false }">
     <script>
@@ -153,18 +154,18 @@
     <div class="ambient-glow"></div>
 
     <header class="staff-header">
-        <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <div class="flex items-center gap-6">
             
             <button class="mobile-menu-btn" @click="isMobileMenuOpen = !isMobileMenuOpen">
                 <i class="ph" :class="isMobileMenuOpen ? 'ph-x' : 'ph-list'"></i>
             </button>
 
-            <div class="brand" style="margin-bottom: 0; display: flex; align-items: center; gap: 8px;">
-                <i class="ph-fill ph-car-profile" style="font-size: 1.8rem; color: var(--accent-primary);"></i>
-                <h2 style="margin: 0; font-size: 1.4rem;">ParkGrid</h2>
+            <div class="brand flex items-center gap-2 mb-0">
+                <i class="ph-fill ph-car-profile text-[1.8rem] text-[var(--accent-primary)]"></i>
+                <h2 class="m-0 text-[1.4rem]">ParkGrid</h2>
             </div>
             
-            <nav class="staff-nav" style="margin-left: 1.5rem;">
+            <nav class="staff-nav ml-6">
                 <a href="{{ route('staff.dashboard') }}" class="staff-nav-item {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
                     <i class="ph ph-qr-code"></i> Check In / Out
                 </a>
@@ -180,15 +181,15 @@
             </nav>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <div class="flex items-center gap-6">
             <label class="theme-switch" title="Toggle Theme">
                 <input type="checkbox" id="themeToggle">
                 <span class="slider"></span>
             </label>
             
-            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+            <form action="{{ route('logout') }}" method="POST" class="m-0">
                 @csrf
-                <button type="submit" style="background: none; border: none; color: #ef4444; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <button type="submit" class="bg-transparent border-none text-[#ef4444] font-semibold cursor-pointer flex items-center gap-1.5">
                     <i class="ph ph-sign-out"></i> <span class="hide-mobile">End Shift</span>
                 </button>
             </form>
@@ -198,7 +199,8 @@
 
     <div x-show="isMobileMenuOpen"
          x-transition.opacity.duration.300ms
-         style="display: none; position: fixed; top: 70px; left: 0; width: 100%; height: calc(100vh - 70px); background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 40;"
+         style="display: none;"
+         class="fixed top-[70px] left-0 w-full h-[calc(100vh-70px)] bg-black/40 backdrop-blur-sm z-40"
          @click="isMobileMenuOpen = false">
     </div>
 
@@ -210,7 +212,8 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 translate-y-0"
          x-transition:leave-end="opacity-0 -translate-y-5"
-         style="display: none; position: fixed; top: 70px; left: 0; width: 100%; z-index: 41;">
+         style="display: none;"
+         class="mobile-menu-overlay fixed top-[70px] left-0 w-full z-[41]">
         
         <a href="{{ route('staff.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
             <i class="ph-fill ph-qr-code"></i> Check In / Out
