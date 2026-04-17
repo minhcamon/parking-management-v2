@@ -11,10 +11,13 @@ class ParkingSessions extends Model
         'ticket_type_id',
         'license_plate',
         'check_in_time',
-        'check_out_time',
         'staff_id_in',
-        'staff_id_out',
         'status',
+    ];
+
+    protected $casts = [
+        'check_in_time' => 'datetime',
+        'check_out_time' => 'datetime',
     ];
 
     public function card()
