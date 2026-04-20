@@ -20,14 +20,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
         // 1. Create Users
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@admin.com'],
-            [
-                'name' => 'Administrator',
-                'password' => Hash::make('123456'),
-            ]
-        );
+        $admin = User::create([
+            'name' => 'Quản lý Bãi xe',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('123456'),
+            'role' => 'admin',
+        ]);
+
+        User::create([
+            'name' => 'Nhân viên Cổng 1',
+            'email' => 'staff@gmail.com',
+            'password' => bcrypt('123456'),
+            'role' => 'staff',
+        ]);
+
 
         // 2. Create Vehicle Types
         $motor = VehicleTypes::firstOrCreate(
@@ -70,7 +78,7 @@ class DatabaseSeeder extends Seeder
 
         // 5. Create Parking Sessions (In-Use)
         for ($i = 0; $i < 5; $i++) {
-            $isMotor = $i < 3; 
+            $isMotor = $i < 3;
 
             $session = ParkingSessions::create([
                 'card_id' => $cards[$i]->id,
@@ -87,7 +95,7 @@ class DatabaseSeeder extends Seeder
         // 6. Create Historical Completed Sessions & Transactions
         for ($i = 5; $i < 8; $i++) {
             $isMotor = $i < 7;
-            
+
             // Completed session
             $session = ParkingSessions::create([
                 'card_id' => $cards[$i]->id,
