@@ -266,29 +266,46 @@
             <div class="widget-title">
                 <i class="ph-fill ph-garage"></i> LIVE AVAILABILITY
             </div>
+{{--            <!-- Mock Data -->--}}
+{{--            <div class="slot-row">--}}
+{{--                <div class="flex items-center gap-2">--}}
+{{--                    <i class="ph-fill ph-motorcycle text-[1.5rem] text-[var(--text-muted)]"></i>--}}
+{{--                    <strong>Xe Máy</strong>--}}
+{{--                </div>--}}
+{{--                <div>--}}
+{{--                    <span class="text-[1.2rem] font-bold text-[#10b981]">185</span>--}}
+{{--                    <span class="text-[var(--text-muted)]">/ 300</span>--}}
+{{--                </div>--}}
+{{--            </div>--}}
 
-            <!-- Mock Data -->
-            <div class="slot-row">
-                <div class="flex items-center gap-2">
-                    <i class="ph-fill ph-motorcycle text-[1.5rem] text-[var(--text-muted)]"></i>
-                    <strong>Xe Máy</strong>
-                </div>
-                <div>
-                    <span class="text-[1.2rem] font-bold text-[#10b981]">185</span>
-                    <span class="text-[var(--text-muted)]">/ 300</span>
-                </div>
+{{--            <div class="slot-row">--}}
+{{--                <div class="flex items-center gap-2">--}}
+{{--                    <i class="ph-fill ph-car text-[1.5rem] text-[var(--text-muted)]"></i>--}}
+{{--                    <strong>Ô Tô</strong>--}}
+{{--                </div>--}}
+{{--                <div>--}}
+{{--                    <span class="text-[1.2rem] font-bold text-[#f59e0b]">5</span>--}}
+{{--                    <span class="text-[var(--text-muted)]">/ 50</span>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+
+            <div class="slots-container">
+                @foreach($liveAvailability as $slot)
+                    <div class="slot-row">
+                        <div class="flex items-center gap-2">
+                            <i class="ph-fill {{ $slot['icon'] }} text-[1.5rem] text-[var(--text-muted)]"></i>
+                            <strong>{{ $slot['name'] }}</strong>
+                        </div>
+                        <div>
+                <span class="text-[1.2rem] font-bold {{ $slot['color_class'] }}">
+                    {{ $slot['occupied'] }}
+                </span>
+                            <span class="text-[var(--text-muted)]">/ {{ $slot['total'] }}</span>
+                        </div>
+                    </div>
+                @endforeach
             </div>
 
-            <div class="slot-row">
-                <div class="flex items-center gap-2">
-                    <i class="ph-fill ph-car text-[1.5rem] text-[var(--text-muted)]"></i>
-                    <strong>Ô Tô</strong>
-                </div>
-                <div>
-                    <span class="text-[1.2rem] font-bold text-[#f59e0b]">5</span>
-                    <span class="text-[var(--text-muted)]">/ 50</span>
-                </div>
-            </div>
         </div>
 
         <!-- Widget 2: Recent History -->
@@ -297,28 +314,39 @@
                 <i class="ph-fill ph-clock-counter-clockwise"></i> RECENT ACTIVITY
             </div>
 
-            <div class="history-list">
-                @for($i=0; $i<6; $i++)
-                <div class="history-item">
-                    @if($i % 2 == 0)
-                        <div class="badge-in">IN</div>
-                    @else
-                        <div class="badge-out">OUT</div>
-                    @endif
-                    <div class="grow">
-                        <div class="font-medium">RFID_000{{$i+1}}</div>
-                        <div class="text-[0.8rem] text-[var(--text-muted)]">29A1-1234{{$i}} • Xe Máy</div>
-                    </div>
-                    <div class="text-[0.8rem] text-[var(--text-muted)] text-right">
-                        Just now<br>
-                        @if($i % 2 != 0)
-                            <span class="text-[#10b981] font-bold">+5,000đ</span>
-                        @endif
-                    </div>
+                <div class="history-list overflow-y-auto">
+                    @forelse($recentActivity as $activity)
+                        <div class="history-item flex items-center p-3 border-b border-gray-100 last:border-0">
+
+                            <div class="{{ $activity['badge_class'] }} mr-3">
+                                {{ $activity['type'] }}
+                            </div>
+
+                            <div class="grow">
+                                <div class="font-medium text-[var(--text-main)]">{{ $activity['plate'] }}</div>
+                                <div class="text-[0.8rem] text-[var(--text-muted)] mt-0.5">
+                                    {{$activity['rfid']  }} • {{ $activity['vehicle'] }}
+                                </div>
+                            </div>
+
+                            <div class="text-[0.8rem] text-[var(--text-muted)] text-right">
+                                <span>{{ $activity['time'] }}</span><br>
+
+                                @if($activity['amount'] > 0)
+                                    <span class="text-[#10b981] font-bold block mt-0.5">
+                            +{{ number_format($activity['amount'], 0, ',', '.') }}đ
+                        </span>
+                                @endif
+                            </div>
+
+                        </div>
+                    @empty
+                        <div class="p-5 text-center text-[var(--text-muted)] italic">
+                            Chưa có hoạt động nào.
+                        </div>
+                    @endforelse
                 </div>
-                @endfor
             </div>
-        </div>
 
     </div>
 

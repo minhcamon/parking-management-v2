@@ -1,72 +1,78 @@
 <?php
+
 namespace App\Http\Controllers\Staff;
+
 use App\Http\Controllers\Controller;
 use App\Models\Cards;
 use App\Models\ParkingSessions;
+use App\Models\Transactions; // Nhớ import model này cho hàm Check-out
+use App\Models\MonthlyPasses; // Nếu có dùng vé tháng
+use App\Models\TicketTypes; // Nếu có lấy giá vé
+use App\Models\VehicleTypes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class StaffDashboardController extends Controller
 {
-    public function index() {
-        return view('staff.dashboard');
+    // ==========================================
+    // 1. TRANG CHỦ DASHBOARD
+    // ==========================================
+    public function index()
+    {
+        // Gọi 2 hàm private để lấy dữ liệu
+        $liveAvailability = $this->getLiveAvailability();
+        $recentActivity = $this->getRecentActivity();
+
+        // [SỬA LỖI]: Bắt buộc phải có compact() để truyền biến ra ngoài View
+        return view('staff.dashboard', compact('liveAvailability', 'recentActivity'));
     }
 
+    // ==========================================
+    // 2. LUỒNG CHECK-IN (XE VÀO)
+    // ==========================================
     public function checkIn(Request $request)
     {
-        // 1. Validate đầu vào
-        // 1. Khai báo các quy tắc (Rules)
+        // [CẢI TIẾN]: Thêm chữ 'bail' để tối ưu hiệu năng báo lỗi
         $rules = [
-            'rfid_code' => 'required|exists:cards,rfid_code',
-            'license_plate' => 'required|string',
+            'rfid_code' => 'bail|required|exists:cards,rfid_code',
+            'license_plate' => 'bail|required|string',
+            'vehicle_type_id' => 'bail|required|exists:vehicle_types,id',
         ];
 
-        // 2. Tự viết lời chửi (Custom Messages) bằng tiếng Việt
-        // Cú pháp: 'tên_trường.tên_rule' => 'Lời nhắn'
         $messages = [
             'rfid_code.required' => 'Quên quẹt thẻ rồi nhân viên ơi!',
             'rfid_code.exists' => 'Mã thẻ này không tồn tại trong hệ thống kho.',
             'license_plate.required' => 'Bắt buộc phải nhập biển số xe lúc Check-in.',
+            'vehicle_type_id.required' => '',
         ];
 
-        // 3. Khởi tạo Validator
         $validator = Validator::make($request->all(), $rules, $messages);
 
-        // 4. Nếu phát hiện lỗi -> Ép nó vào session('error')
         if ($validator->fails()) {
-            // errors()->first() sẽ chỉ lấy ra cái lỗi đầu tiên vấp phải
-            // để hiển thị 1 câu ngắn gọn trên Toast cho đẹp
-            $firstError = $validator->errors()->first();
-
             return redirect()->back()
-                ->with('error', $firstError)
-                ->withInput(); // Nhớ hàm này để giữ lại biển số khách vừa gõ nhé!
+                ->with('error', $validator->errors()->first())
+                ->withInput();
         }
 
-        // 2. Thực hiện nghiệp vụ trong Transaction
         try {
             $session = DB::transaction(function () use ($request) {
-                // Lấy thông tin thẻ từ mã RFID
                 $card = Cards::where('rfid_code', $request->rfid_code)->first();
 
-                // Kiểm tra xem thẻ có đang được sử dụng không (Logic nghiệp vụ thêm)
                 if ($card->status === 'in_use') {
                     throw new \Exception("Thẻ này đang được sử dụng, không thể check-in!");
                 }
 
-                // A. Tạo phiên gửi xe bằng hàm create()
                 $newSession = ParkingSessions::create([
                     'card_id' => $card->id,
-                    'ticket_type_id' => $request->ticket_type_id,
+                    'ticket_type_id' => $request->ticket_type_id, // Đảm bảo form có gửi field này
                     'license_plate' => $request->license_plate,
-                    'check_in_time' => now(), // Lấy thời gian hiện tại
-                    'staff_id_in' => Auth::id(), // ID của nhân viên đang đăng nhập
+                    'check_in_time' => now(),
+                    'staff_id_in' => Auth::id() ?? 1, // Nên dùng Auth::id() để lấy ID thật
                     'status' => 'parking',
                 ]);
 
-                // B. Cập nhật trạng thái thẻ sang 'in_use'
                 $card->update(['status' => 'in_use']);
 
                 return $newSession;
@@ -76,13 +82,171 @@ class StaffDashboardController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
-        } catch (\Throwable $e) {
         }
     }
 
-    public function checkOut() {
+    // ==========================================
+    // 3. LUỒNG CHECK-OUT (XE RA)
+    // ==========================================
+    public function checkOut(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'rfid_code' => 'bail|required|exists:cards,rfid_code',
+            'license_plate' => 'bail|required|string',
+        ], [
+            'rfid_code.required' => 'Vui lòng quẹt thẻ để Check-out.',
+            'rfid_code.exists' => 'Mã thẻ này không tồn tại trong hệ thống.',
+        ]);
 
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->with('error', $validator->errors()->first())
+                ->withInput();
+        }
+
+        try {
+            $checkoutData = DB::transaction(function () use ($request) {
+
+                $card = Cards::where('rfid_code', $request->rfid_code)->first();
+
+                // Tìm xe đang đỗ bằng thẻ này
+                $session = ParkingSessions::where('card_id', $card->id)
+                    ->where('status', 'parking')
+                    ->first();
+
+                if (!$session) {
+                    throw new \Exception("Thẻ này chưa check-in hoặc xe đã ra khỏi bãi!");
+                }
+
+                // Giả định logic tính tiền đơn giản (Có thể thay đổi tùy DB của bạn)
+                $amount = 10000; // Hoặc lấy từ TicketTypes::find($session->ticket_type_id)->price;
+
+                // Cập nhật Phiên
+                $session->update([
+                    'check_out_time' => now(),
+                    'staff_id_out'   => Auth::id() ?? 1,
+                    'status'         => 'completed',
+                ]);
+
+                // Trả thẻ về kho
+                $card->update(['status' => 'available']);
+
+                // Ghi nhận doanh thu
+                Transactions::create([
+                    'session_id'   => $session->id,
+                    'amount'       => $amount,
+                    'payment_time' => now(),
+                    'staff_id'     => Auth::id() ?? 1,
+                ]);
+
+                return [
+                    'license_plate' => $session->license_plate,
+                    'amount' => $amount
+                ];
+            });
+
+            $formattedAmount = number_format($checkoutData['amount'], 0, ',', '.');
+            return redirect()->back()->with('success', "Xe {$checkoutData['license_plate']} ra bãi. Thu: {$formattedAmount} VNĐ.");
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
+    // ==========================================
+    // 4. CÁC HÀM TIỆN ÍCH (PRIVATE)
+    // ==========================================
+    private function getLiveAvailability()
+    {
+        // 1. Lấy TẤT CẢ các loại xe từ Database
+        // Không cần where('name', ...), lấy hết ra để hệ thống tự động co giãn
+        $vehicleTypes = VehicleTypes::all();
 
+        // 2. Query đếm số xe đang đỗ (Key sẽ là vehicle_type_id: 1, 2, 3...)
+        $occupiedCounts = DB::table('parking_sessions')
+            ->join('ticket_types', 'parking_sessions.ticket_type_id', '=', 'ticket_types.id')
+            ->select('ticket_types.vehicle_type_id', DB::raw('count(*) as total'))
+            ->where('parking_sessions.status', 'parking')
+            ->groupBy('ticket_types.vehicle_type_id')
+            ->pluck('total', 'ticket_types.vehicle_type_id');
+
+        // 3. Khai báo icon (Map theo tên xe trong DB để dễ khớp)
+        $uiSettings = [
+            'Xe Máy' => 'ph-motorcycle',
+            'Ô Tô'   => 'ph-car',
+            // Nếu DB có 'Xe Đạp', thêm vào đây: 'Xe Đạp' => 'ph-bicycle'
+        ];
+
+        $availability = [];
+
+        // 4. Lặp qua TỪNG MODEL loại xe đã lấy ở Bước 1
+        foreach ($vehicleTypes as $vehicle) {
+
+            $typeId = $vehicle->id; // Lấy ID để đối chiếu
+            // CHÚ Ý CHỖ NÀY: Thay 'max_capacity' bằng đúng tên cột sức chứa trong bảng vehicle_types của bạn
+            $maxCapacity = (int) $vehicle->total_slots;
+
+            // Lấy số xe đang đỗ đúng theo ID
+            $occupied = $occupiedCounts[$typeId] ?? 0;
+
+            // LOGIC MÀU SẮC THÔNG MINH
+            // Tránh lỗi chia cho 0 nếu maxCapacity trong DB chưa được setup
+            if ($maxCapacity > 0) {
+                if ($occupied >= $maxCapacity) {
+                    $colorClass = 'text-red-600';
+                } elseif ($occupied >= ($maxCapacity * 0.8)) {
+                    $colorClass = 'text-[#f59e0b]'; // Sắp đầy
+                } else {
+                    $colorClass = 'text-[#10b981]'; // An toàn
+                }
+            } else {
+                $colorClass = 'text-gray-400'; // Nếu maxCapacity = 0 (chưa setup)
+            }
+
+            // Đóng gói mảng đẩy ra View
+            $availability[] = [
+                'name'        => $vehicle->name, // Lấy thẳng tên tiếng Việt từ DB
+                'icon'        => $uiSettings[$vehicle->name] ?? 'ph-vehicle', // Map icon theo tên
+                'occupied'    => $occupied,
+                'total'       => $maxCapacity,
+                'color_class' => $colorClass,
+            ];
+        }
+
+        return $availability;
+    }
+
+    private function getRecentActivity()
+    {
+        // 1. Kéo 6 giao dịch mới nhất, load kèm thông tin Thẻ, Loại vé và Giao dịch tính tiền
+        $sessions = ParkingSessions::with(['card', 'ticket_type', 'transactions'])
+            ->latest('updated_at')
+            ->take(6)
+            ->get();
+
+        // 2. Format dữ liệu chuẩn bị sẵn cho View
+        return $sessions->map(function ($session) {
+            $isOut = $session->status === 'completed';
+
+            // Xác định loại xe bằng tiếng Việt
+            $vehicleName = ($session->ticketType->vehicle_type ?? '') === 'motorbike' ? 'Xe Máy' : 'Ô Tô';
+
+            return [
+                // Giao diện Badge
+                'type'        => $isOut ? 'OUT' : 'IN',
+                'badge_class' => $isOut ? 'badge-out' : 'badge-in',
+
+                // Thông tin xe
+                'rfid'        => $session->card->rfid_code ?? 'N/A',
+                'plate'       => $session->license_plate,
+                'vehicle'     => $vehicleName,
+
+                // diffForHumans() sinh ra chữ "Just now", "5 mins ago", "1 hour ago" cực kỳ xịn
+                'time'        => $session->updated_at->diffForHumans(),
+
+                // Nếu xe ra và có giao dịch thu tiền thì mới lấy amount
+                'amount'      => ($isOut && $session->transaction) ? $session->transaction->amount : 0,
+            ];
+        });
+    }
 }
