@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->boolean('is_active')->default(false);
             $table->foreignId('vehicle_type_id')->constrained('vehicle_types');
+            $table->enum('type', ['normal', 'pass'])->default('normal');
             $table->timestamps();
         });
     }

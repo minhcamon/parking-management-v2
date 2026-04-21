@@ -13,8 +13,8 @@
         <div class="premium-card">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="font-['Outfit'] text-[1.2rem]">Vehicle Types</h3>
-                <button class="bg-[#6366f1]/10 text-[var(--accent-primary)] border-none w-8 h-8 rounded-lg cursor-pointer flex items-center justify-center hover:bg-[#6366f1]/20 transition">
-                    <i class="ph-bold ph-plus"></i>
+                <button @click="editing = !editing" class="bg-[#6366f1]/10 text-[var(--accent-primary)] border-none w-8 h-8 rounded-lg cursor-pointer flex items-center justify-center hover:bg-[#6366f1]/20 transition">
+                    <i class="ph-bold ph-plus" ></i>
                 </button>
             </div>
 
@@ -43,24 +43,33 @@
                              style="display: none;"
                              class="px-4 pb-4 pt-2 border-t border-black/5">
 
-                            <form action="{{-- route('vehicles.update', $v->id) --}}" method="POST" class="flex flex-col gap-3">
+                            <form action="/vehicles/setup" method="POST" class="flex flex-col gap-4">
                                 @csrf
-                                @method('PUT')
-
-                                <div>
-                                    <label class="text-[0.8rem] font-semibold text-[var(--text-muted)] mb-1 block">Tên loại xe</label>
-                                    <input type="text" name="name" value="{{$v->name}}" class="w-full p-2 text-[0.9rem] rounded-lg border border-black/10 bg-white/50 outline-none focus:border-[var(--accent-primary)]">
+                                <h4 class="font-bold text-gray-700">1. Thông tin Khu vực đỗ</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label>Tên loại xe</label>
+                                        <input type="text" name="name" placeholder="VD: Xe Đạp" required class="form-control">
+                                    </div>
+                                    <div>
+                                        <label>Tổng số chỗ (Slots)</label>
+                                        <input type="number" name="max_capacity" placeholder="VD: 100" required class="form-control">
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label class="text-[0.8rem] font-semibold text-[var(--text-muted)] mb-1 block">Tổng số chỗ đỗ (Slots)</label>
-                                    <input type="number" name="total_slots" value="{{$v->total_slots}}" class="w-full p-2 text-[0.9rem] rounded-lg border border-black/10 bg-white/50 outline-none focus:border-[var(--accent-primary)]">
+                                <h4 class="font-bold text-gray-700 mt-4 border-t pt-4">2. Bảng giá mặc định</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label>Giá vé Lượt (VNĐ)</label>
+                                        <input type="number" name="price_normal" placeholder="VD: 3000" class="form-control">
+                                    </div>
+                                    <div>
+                                        <label>Giá vé Tháng (VNĐ)</label>
+                                        <input type="number" name="price_pass" placeholder="VD: 50000" class="form-control">
+                                    </div>
                                 </div>
 
-                                <div class="flex justify-end gap-2 mt-2">
-                                    <button type="button" @click="editing = false" class="px-3 py-1.5 text-[0.85rem] rounded-lg bg-black/5 hover:bg-black/10 text-[var(--text-main)] font-medium">Hủy</button>
-                                    <button type="submit" class="px-3 py-1.5 text-[0.85rem] rounded-lg bg-[var(--accent-primary)] text-white font-medium shadow-md shadow-indigo-500/20">Cập nhật</button>
-                                </div>
+                                <button type="submit" class="btn btn-primary mt-4">Lưu Cấu Hình Tổng</button>
                             </form>
                         </div>
 

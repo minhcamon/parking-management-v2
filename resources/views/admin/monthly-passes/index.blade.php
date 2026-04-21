@@ -85,19 +85,35 @@
                         <button class="bg-transparent border-none text-red-500 cursor-pointer"><i class="ph ph-trash text-xl"></i></button>
                     </td>
                 </tr>
+
+                @forelse($passes as $p)
+                    <tr class="border-none">
+                        <td class="p-4 font-medium text-[var(--text-main)]">Le Van C</td>
+                        <td class="p-4"><span class="bg-black/5 px-2 py-1 rounded font-mono text-base font-semibold">51F-11223</span></td>
+                        <td class="p-4">Car</td>
+                        <td class="p-4">20/04/2026</td>
+                        <td class="p-4">20/07/2026</td>
+                        <td class="p-4">
+                            <span class="bg-[#10b981]/20 text-[#34d399] px-2.5 py-1 rounded-full text-xs font-semibold">ACTIVE</span>
+                        </td>
+                        <td class="p-4 text-right">
+                            <button class="bg-transparent border-none text-[var(--text-muted)] cursor-pointer mr-2"><i class="ph ph-pencil-simple text-xl"></i></button>
+                            <button class="bg-transparent border-none text-red-500 cursor-pointer"><i class="ph ph-trash text-xl"></i></button>
+                        </td>
+                    </tr>
+                @empty
+
+                @endforelse
+
+
             </tbody>
         </table>
     </div>
 
-    <div class="flex justify-between items-center mt-6 border-t border-black/5 pt-6">
-        <div class="text-[var(--text-muted)] text-[0.85rem]">Showing 1 to 3 of 124 entries</div>
-        <div class="flex gap-2">
-            <button class="px-4 py-2 border border-black/10 bg-transparent text-[var(--text-muted)] rounded-md cursor-pointer">Previous</button>
-            <button class="px-4 py-2 border-none bg-[var(--accent-primary)] text-white rounded-md cursor-pointer">1</button>
-            <button class="px-4 py-2 border border-black/10 bg-transparent text-[var(--text-main)] rounded-md cursor-pointer">2</button>
-            <button class="px-4 py-2 border border-black/10 bg-transparent text-[var(--text-main)] rounded-md cursor-pointer">3</button>
-            <button class="px-4 py-2 border border-black/10 bg-transparent text-[var(--text-muted)] rounded-md cursor-pointer">Next</button>
-        </div>
+    <div class="mt-4 pt-4 border-t border-black/5">
+        {{ $passes->links() }}
     </div>
+
+
 </div>
 @endsection

@@ -21,20 +21,17 @@ class StaffDashboardController extends Controller
     // ==========================================
     public function index()
     {
-        // Gọi 2 hàm private để lấy dữ liệu
         $liveAvailability = $this->getLiveAvailability();
         $recentActivity = $this->getRecentActivity();
 
-        // [SỬA LỖI]: Bắt buộc phải có compact() để truyền biến ra ngoài View
         return view('staff.dashboard', compact('liveAvailability', 'recentActivity'));
     }
 
     // ==========================================
-    // 2. LUỒNG CHECK-IN (XE VÀO)
+    // 2. CHECK IN
     // ==========================================
     public function checkIn(Request $request)
     {
-        // [CẢI TIẾN]: Thêm chữ 'bail' để tối ưu hiệu năng báo lỗi
         $rules = [
             'rfid_code' => 'bail|required|exists:cards,rfid_code',
             'license_plate' => 'bail|required|string',
@@ -60,20 +57,39 @@ class StaffDashboardController extends Controller
             $session = DB::transaction(function () use ($request) {
                 $card = Cards::where('rfid_code', $request->rfid_code)->first();
 
-                if ($card->status === 'in_use') {
-                    throw new \Exception("Thẻ này đang được sử dụng, không thể check-in!");
+
+                if ($card->status === 'inuse' || $card->status === 'lost') {
+                    throw new \Exception("Thẻ này đang được sử dụng hoặc đã báo mất, không thể check-in!");
+                }
+
+                if ($card->status === 'assigned') {
+                    $ticket_type = TicketTypes::where('vehicle_type_id', $request->vehicle_type_id)
+                                                ->where('type', 'pass')
+                                                ->first();
+                } else if ($card->status === 'available') {
+                    $ticket_type = TicketTypes::where('vehicle_type_id', $request->vehicle_type_id)
+                                                ->where('type', 'normal')
+                                                ->first();
+                } else {
+                    throw new \Exception("Trạng thái thẻ không hợp lệ.");
+                }
+
+                if (!$ticket_type) {
+                    throw new \Exception("Hệ thống chưa cấu hình Loại vé cho xe này. Vui lòng báo Admin!");
                 }
 
                 $newSession = ParkingSessions::create([
                     'card_id' => $card->id,
-                    'ticket_type_id' => $request->ticket_type_id, // Đảm bảo form có gửi field này
+                    'ticket_type_id' => $ticket_type->id,
                     'license_plate' => $request->license_plate,
                     'check_in_time' => now(),
-                    'staff_id_in' => Auth::id() ?? 1, // Nên dùng Auth::id() để lấy ID thật
+                    'staff_id_in' => Auth::id() ?? 1,
                     'status' => 'parking',
                 ]);
 
-                $card->update(['status' => 'in_use']);
+                if ($card->status === 'available') {
+                    $card->update(['status' => 'inuse']);
+                }
 
                 return $newSession;
             });
@@ -86,7 +102,7 @@ class StaffDashboardController extends Controller
     }
 
     // ==========================================
-    // 3. LUỒNG CHECK-OUT (XE RA)
+    // 3. CHECK OUT
     // ==========================================
     public function checkOut(Request $request)
     {
@@ -118,8 +134,8 @@ class StaffDashboardController extends Controller
                     throw new \Exception("Thẻ này chưa check-in hoặc xe đã ra khỏi bãi!");
                 }
 
-                // Giả định logic tính tiền đơn giản (Có thể thay đổi tùy DB của bạn)
-                $amount = 10000; // Hoặc lấy từ TicketTypes::find($session->ticket_type_id)->price;
+//                $amount = 10000; // Hoặc lấy từ TicketTypes::find($session->ticket_type_id)->price;
+                $amount = TicketTypes::find($session->ticket_type_id)->price;
 
                 // Cập nhật Phiên
                 $session->update([
@@ -241,10 +257,8 @@ class StaffDashboardController extends Controller
                 'plate'       => $session->license_plate,
                 'vehicle'     => $vehicleName,
 
-                // diffForHumans() sinh ra chữ "Just now", "5 mins ago", "1 hour ago" cực kỳ xịn
                 'time'        => $session->updated_at->diffForHumans(),
 
-                // Nếu xe ra và có giao dịch thu tiền thì mới lấy amount
                 'amount'      => ($isOut && $session->transaction) ? $session->transaction->amount : 0,
             ];
         });

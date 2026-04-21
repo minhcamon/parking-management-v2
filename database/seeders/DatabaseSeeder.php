@@ -24,14 +24,14 @@ class DatabaseSeeder extends Seeder
         // 1. Create Users
         $admin = User::create([
             'name' => 'Quản lý Bãi xe',
-            'email' => 'admin@gmail.com',
+            'email' => 'admin@parkgrid.com',
             'password' => bcrypt('123456'),
             'role' => 'admin',
         ]);
 
         User::create([
             'name' => 'Nhân viên Cổng 1',
-            'email' => 'staff@gmail.com',
+            'email' => 'staff@parkgrid.com',
             'password' => bcrypt('123456'),
             'role' => 'staff',
         ]);
@@ -55,6 +55,7 @@ class DatabaseSeeder extends Seeder
                 'price' => 5000,
                 'is_active' => true,
                 'vehicle_type_id' => $motor->id,
+                'type' => 'normal',
             ]
         );
 
@@ -64,6 +65,7 @@ class DatabaseSeeder extends Seeder
                 'price' => 30000,
                 'is_active' => true,
                 'vehicle_type_id' => $car->id,
+                'type' => 'normal',
             ]
         );
 

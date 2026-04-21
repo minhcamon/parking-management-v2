@@ -38,50 +38,32 @@
                     <th class="p-4">Type</th>
                     <th class="p-4">Card ID</th>
                     <th class="p-4">License Plate</th>
-                    <th class="p-4">Image</th>
-                    <th class="p-4">Cost</th>
+                    <th class="p-4">Amount</th>
                     <th class="p-4">Operator</th>
                 </tr>
             </thead>
             <tbody>
-                <tr class="border-b border-black/5">
-                    <td class="p-4 text-[var(--text-main)]">17/04/2026 09:12:45</td>
-                    <td class="p-4">
-                        <span class="bg-[#10b981]/20 text-[#34d399] px-2.5 py-1 rounded-[20px] text-[0.75rem] font-semibold">IN</span>
-                    </td>
-                    <td class="p-4 font-mono">A1B2C3D4</td>
-                    <td class="p-4 font-semibold">29A-12345</td>
-                    <td class="p-4">
-                        <div class="w-[60px] h-[40px] bg-black/10 rounded-md flex items-center justify-center text-[0.75rem] text-[var(--text-muted)]">Img</div>
-                    </td>
-                    <td class="p-4 text-[var(--text-main)]">-</td>
-                    <td class="p-4 text-[var(--text-muted)]">staff1</td>
-                </tr>
-                <tr class="border-b border-black/5">
-                    <td class="p-4 text-[var(--text-main)]">17/04/2026 08:30:10</td>
-                    <td class="p-4">
-                        <span class="bg-[#ef4444]/20 text-red-500 px-2.5 py-1 rounded-[20px] text-[0.75rem] font-semibold">OUT</span>
-                    </td>
-                    <td class="p-4 font-mono">E5F6G7H8</td>
-                    <td class="p-4 font-semibold">30H-98765</td>
-                    <td class="p-4">
-                        <div class="w-[60px] h-[40px] bg-black/10 rounded-md flex items-center justify-center text-[0.75rem] text-[var(--text-muted)]">Img</div>
-                    </td>
-                    <td class="p-4 text-[#10b981] font-semibold">5,000 đ</td>
-                    <td class="p-4 text-[var(--text-muted)]">staff1</td>
-                </tr>
+                @forelse($transactions as $t)
+                    <tr class="border-b border-black/5">
+                        <td class="p-4 text-[var(--text-main)]">{{$t['payment_time']}}</td>
+                        <td class="p-4">
+                            <span class="bg-[#ef4444]/20 text-red-500 px-2.5 py-1 rounded-[20px] text-[0.75rem] font-semibold">{{$t['type']}}</span>
+                        </td>
+                        <td class="p-4 font-mono">{{$t['rfid_code']}}</td>
+                        <td class="p-4 font-semibold">{{$t['license_plate']}}</td>
+
+                        <td class="p-4 text-[#10b981] font-semibold">{{$t['amount']}}</td>
+                        <td class="p-4 text-[var(--text-muted)]">{{$t['staff_name']}}</td>
+                    </tr>
+                @empty
+
+                @endforelse
+
             </tbody>
         </table>
     </div>
-    
-    <!-- Pagination Placeholder -->
-    <div class="flex justify-center mt-6 pt-6 border-t border-black/5">
-        <div class="flex gap-2">
-            <button class="px-4 py-2 border border-black/10 bg-transparent text-[var(--text-muted)] rounded-md cursor-pointer">Previous</button>
-            <button class="px-4 py-2 border-none bg-[var(--accent-primary)] text-white rounded-md cursor-pointer">1</button>
-            <button class="px-4 py-2 border border-black/10 bg-transparent text-[var(--text-main)] rounded-md cursor-pointer">2</button>
-            <button class="px-4 py-2 border border-black/10 bg-transparent text-[var(--text-muted)] rounded-md cursor-pointer">Next</button>
-        </div>
+    <div class="mt-4 flex justify-end">
+        {{ $transactions->links() }}
     </div>
 </div>
 @endsection

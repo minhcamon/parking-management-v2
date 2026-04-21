@@ -11,6 +11,7 @@ class TicketTypes extends Model
         'price',
         'is_active',
         'vehicle_type_id',
+        'type',
     ];
 
     public function vehicle_type()
