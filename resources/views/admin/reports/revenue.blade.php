@@ -6,27 +6,27 @@
 
     <div class="premium-card mb-6" x-data="{ openCustom: @json($period === 'custom') }">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h3 class="font-['Outfit'] text-[1.4rem] font-bold m-0 text-[var(--accent-primary)]">Revenue Analytics</h3>
-            
+            <h3 class="text-[1.4rem] font-bold m-0 text-[var(--accent-primary)]">Revenue Analytics</h3>
+
             <div class="flex flex-wrap items-center gap-2">
                 <form method="GET" action="{{ route('admin.reports.revenue') }}" class="flex flex-wrap items-center gap-2">
-                    <button type="submit" name="period" value="today" 
+                    <button type="submit" name="period" value="today"
                             class="px-4 py-2 rounded-xl text-sm font-semibold transition {{ $period === 'today' ? 'bg-[var(--accent-primary)] text-white shadow-lg shadow-indigo-500/30' : 'bg-black/5 text-[var(--text-muted)] hover:bg-black/10' }}">
                         Today
                     </button>
-                    <button type="submit" name="period" value="this_week" 
+                    <button type="submit" name="period" value="this_week"
                             class="px-4 py-2 rounded-xl text-sm font-semibold transition {{ $period === 'this_week' ? 'bg-[var(--accent-primary)] text-white shadow-lg shadow-indigo-500/30' : 'bg-black/5 text-[var(--text-muted)] hover:bg-black/10' }}">
                         This Week
                     </button>
-                    <button type="submit" name="period" value="this_month" 
+                    <button type="submit" name="period" value="this_month"
                             class="px-4 py-2 rounded-xl text-sm font-semibold transition {{ $period === 'this_month' ? 'bg-[var(--accent-primary)] text-white shadow-lg shadow-indigo-500/30' : 'bg-black/5 text-[var(--text-muted)] hover:bg-black/10' }}">
                         This Month
                     </button>
-                    <button type="submit" name="period" value="this_year" 
+                    <button type="submit" name="period" value="this_year"
                             class="px-4 py-2 rounded-xl text-sm font-semibold transition {{ $period === 'this_year' ? 'bg-[var(--accent-primary)] text-white shadow-lg shadow-indigo-500/30' : 'bg-black/5 text-[var(--text-muted)] hover:bg-black/10' }}">
                         This Year
                     </button>
-                    
+
                     <button type="button" @click="openCustom = !openCustom"
                             class="px-4 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-2 {{ $period === 'custom' ? 'bg-[var(--accent-primary)] text-white shadow-lg shadow-indigo-500/30' : 'bg-black/5 text-[var(--text-muted)] hover:bg-black/10' }}">
                         <i class="ph ph-calendar-blank"></i> Custom
@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <form method="GET" action="{{ route('admin.reports.revenue') }}" x-show="openCustom" 
+        <form method="GET" action="{{ route('admin.reports.revenue') }}" x-show="openCustom"
               x-transition:enter="transition ease-out duration-200"
               x-transition:enter-start="opacity-0 -translate-y-4"
               x-transition:enter-end="opacity-100 translate-y-0"
@@ -93,7 +93,7 @@
     </div>
 
     <div class="premium-card p-6 var(--bg-color) rounded-xl shadow-sm border border-gray-100 mt-6">
-        <h3 class="font-['Outfit'] text-[1.2rem] font-bold var(--text-main) mb-6">Revenue Trend</h3>
+        <h3 class="text-[1.2rem] font-bold var(--text-main) mb-6">Revenue Trend</h3>
         <div id="revenueChart" class="w-full h-[350px]"></div>
     </div>
 

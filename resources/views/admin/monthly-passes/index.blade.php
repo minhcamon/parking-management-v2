@@ -7,7 +7,7 @@
     <div class="premium-card">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
-                <h3 class="font-['Be+Vietnam+Pro'] text-[1.4rem] font-black m-0 mb-1">Danh sách vé tháng</h3>
+                <h3 class="text-[1.4rem] font-black m-0 mb-1">Danh sách vé tháng</h3>
                 <p class="text-[0.8rem] text-[var(--text-muted)] font-medium">Quản lý và gia hạn vé tháng cho khách hàng</p>
             </div>
 
@@ -116,7 +116,7 @@
         <div x-show="showPassModal" @click="showPassModal = false" x-transition.opacity class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
         <div x-show="showPassModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8 scale-95" class="relative w-full max-w-xl premium-card !p-0 overflow-hidden shadow-2xl">
             <div class="p-6 border-b border-black/5 flex justify-between items-center bg-black/[0.02]">
-                <h3 class="font-['Be+Vietnam+Pro'] text-[1.2rem] font-bold m-0">Đăng ký Vé tháng mới</h3>
+                <h3 class=" text-[1.2rem] font-bold m-0">Đăng ký Vé tháng mới</h3>
                 <button @click="showPassModal = false" class="bg-black/5 hover:bg-red-50 text-[var(--text-muted)] hover:text-red-500 w-8 h-8 rounded-full flex items-center justify-center border-none cursor-pointer transition">
                     <i class="ph-bold ph-x"></i>
                 </button>

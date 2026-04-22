@@ -17,9 +17,9 @@
             <div class="premium-card">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-[1.1rem] font-bold m-0 flex items-center gap-2">
-                        <i class="ph-bold ph-gear-six text-[var(--accent-primary)]"></i> Khu vực đỗ
+                        <i class="ph-bold ph-gear-six text-[var(--accenQuản lý Thẻ RFIDt-primary)]"></i> Khu vực đỗ
                     </h3>
-                    <span class="text-[0.7rem] font-bold text-[var(--text-muted)] bg-black/5 px-2 py-1 rounded-md uppercase tracking-wider">Update Only</span>
+                    <span class="text-[0.7rem] font-bold text-[var(--text-muted)] bg-[var(--bg-color)] px-2 py-1 rounded-md uppercase tracking-wider">Update Only</span>
                 </div>
 
                 <div class="flex flex-col gap-3">
@@ -61,7 +61,7 @@
             <!-- Pricing Card -->
             <div class="premium-card">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-['Outfit'] text-[1.1rem] font-bold m-0 flex items-center gap-2">
+                    <h3 class="text-[1.1rem] font-bold m-0 flex items-center gap-2">
                         <i class="ph-bold ph-currency-circle-dollar text-[var(--accent-primary)]"></i> Bảng giá vé
                     </h3>
                 </div>
@@ -89,7 +89,7 @@
             <div class="premium-card">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <div>
-                        <h3 class="font-['Outfit'] text-[1.4rem] font-black m-0 mb-1">Quản lý Thẻ RFID</h3>
+                        <h3 class="text-[1.4rem] font-black m-0 mb-1">Quản lý Thẻ RFID</h3>
                         <p class="text-[0.8rem] text-[var(--text-muted)] font-medium">Theo dõi và phát hành thẻ gửi xe</p>
                     </div>
 
