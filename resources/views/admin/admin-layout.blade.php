@@ -80,13 +80,19 @@
             <li class="nav-item {{ request()->routeIs('admin.reports.revenue') ? 'active' : '' }}">
                 <a href="{{ route('admin.reports.revenue') }}"><i class="ph ph-chart-line-up"></i> Báo cáo doanh thu</a>
             </li>
+            <div class="dropdown-divider my-4 opacity-50"></div>
+            <li class="nav-item">
+                <a href="{{ route('staff.dashboard') }}" target="_blank" class="text-[var(--accent-secondary)]">
+                    <i class="ph ph-desktop"></i> Giao diện POS (Staff)
+                </a>
+            </li>
         </ul>
 
         <div class="user-profile mt-auto w-full" id="userProfileBtn">
             <div class="user-profile-trigger rounded-xl px-4 py-[0.8rem]">
                 <span class="flex items-center gap-2.5">
-                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff" alt="Admin" class="w-8 h-8 rounded-full">
-                    Admin
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff" alt="Admin" class="w-8 h-8 rounded-full">
+                    {{ Auth::user()->name }}
                 </span>
                 <i class="ph ph-caret-up"></i>
             </div>

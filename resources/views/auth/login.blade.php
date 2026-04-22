@@ -37,6 +37,16 @@
         <h2 class="mb-2">Welcome Back</h2>
         <p class="text-[var(--text-muted)] mb-8 text-[0.9rem]">Sign in to access your workspace.</p>
 
+        @if ($errors->any())
+            <div class="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm">
+                <ul class="list-none p-0 m-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('login.post') }}" method="POST">
             @csrf
             

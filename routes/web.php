@@ -13,15 +13,22 @@ use Illuminate\Support\Facades\Route;
 
 // --- Welcome & Auth ---
 Route::get('/', function () {
+    if (Illuminate\Support\Facades\Auth::check()) {
+        return Illuminate\Support\Facades\Auth::user()->role === 'admin' 
+            ? redirect()->route('admin.dashboard') 
+            : redirect()->route('staff.dashboard');
+    }
     return view('welcome');
 })->name('welcome');
 
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+});
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // --- Admin Section ---
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'getDashboard'])->name('dashboard');
     Route::post('/add-card', [AdminDashboardController::class, 'addNewCard'])->name('add-card'); // Keeping from previous code
@@ -47,7 +54,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // --- Staff Section ---
-Route::prefix('staff')->name('staff.')->group(function () {
+Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
     // Dashboard (Check In / Check Out UI)
     Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
 

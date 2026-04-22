@@ -178,10 +178,20 @@
                 <a href="{{ route('staff.history.index') }}" class="staff-nav-item {{ request()->routeIs('staff.history.*') ? 'active' : '' }}">
                     <i class="ph ph-clock-counter-clockwise"></i> History
                 </a>
+                @if(Auth::user()->role === 'admin')
+                    <a href="{{ route('admin.dashboard') }}" class="staff-nav-item text-[var(--accent-secondary)]">
+                        <i class="ph ph-shield-check"></i> Admin Panel
+                    </a>
+                @endif
             </nav>
         </div>
 
         <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3 mr-2">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6366f1&color=fff" alt="User" class="w-8 h-8 rounded-full border border-white/20">
+                <span class="text-[0.9rem] font-medium text-[var(--text-main)] hide-mobile">{{ Auth::user()->name }}</span>
+            </div>
+
             <label class="theme-switch" title="Toggle Theme">
                 <input type="checkbox" id="themeToggle">
                 <span class="slider"></span>
@@ -227,6 +237,11 @@
         <a href="{{ route('staff.history.index') }}" class="mobile-nav-item {{ request()->routeIs('staff.history.*') ? 'active' : '' }}">
             <i class="ph-fill ph-clock-counter-clockwise"></i> History
         </a>
+        @if(Auth::user()->role === 'admin')
+            <a href="{{ route('admin.dashboard') }}" class="mobile-nav-item text-[var(--accent-secondary)]">
+                <i class="ph-fill ph-shield-check"></i> Admin Panel
+            </a>
+        @endif
     </div>
 
     <main class="staff-container">
