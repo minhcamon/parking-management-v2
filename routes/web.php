@@ -28,12 +28,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Parking Site (Vehicle Types & Cards)
     Route::get('/parking-site', [ParkingSiteController::class, 'index'])->name('parking-site.index');
+    Route::post('/cards', [ParkingSiteController::class, 'store'])->name('cards.store');
+    Route::post('/cards/bulk', [ParkingSiteController::class, 'bulkStore'])->name('cards.bulk');
+    Route::put('/cards/update/{id}', [ParkingSiteController::class, 'update'])->name('cards.update');
+
+    Route::put('/vehicles/{id}', [ParkingSiteController::class, 'updateVehicle'])->name('vehicles.update');
 
     // User & Staff Management
     Route::get('/staff', [StaffManagerController::class, 'index'])->name('staff.index');
 
     // Monthly Passes
     Route::get('/monthly-passes', [AdminMonthlyPassController::class, 'index'])->name('monthly-passes.index');
+    Route::post('/monthly-passes', [AdminMonthlyPassController::class, 'store'])->name('monthly-passes.store');
 
     // Reports (History & Revenue)
     Route::get('/reports/transactions', [ReportController::class, 'transactions'])->name('reports.transactions');

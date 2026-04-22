@@ -11,14 +11,29 @@
     }">
 
         <div class="premium-card mb-6">
-            <div class="flex justify-between items-center">
-                <div class="relative w-[300px]">
-                    <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
-                    <input type="text" class="form-control pl-10 mb-0" placeholder="Search staff members...">
-                </div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <form action="{{ route('admin.staff.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <div class="relative w-full md:w-[300px]">
+                        <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"></i>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                               class="form-control pl-10 mb-0 w-full" placeholder="Search name or email...">
+                    </div>
+
+                    <select name="role" onchange="this.form.submit()"
+                            class="p-2.5 rounded-xl border border-black/10 bg-black/5 outline-none focus:border-[var(--accent-primary)] transition text-[0.95rem] font-medium min-w-[150px]">
+                        <option value="">All Roles</option>
+                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="staff" {{ request('role') == 'staff' ? 'selected' : '' }}>Staff</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-secondary px-4 py-2 text-sm">Apply</button>
+                    @if(request()->hasAny(['search', 'role']))
+                        <a href="{{ route('admin.staff.index') }}" class="text-[0.85rem] text-red-500 hover:underline">Clear</a>
+                    @endif
+                </form>
 
                 <button @click="showModal = true; modalMode = 'add'; staffData = { id: '', name: '', email: '', role: 'staff', is_active: 1, password: '' }"
-                        class="btn btn-primary px-6 py-[0.8rem] bg-[var(--accent-primary)] text-white border-none rounded-lg font-medium cursor-pointer flex items-center gap-2 hover:scale-105 transition shadow-lg shadow-indigo-500/30">
+                        class="btn btn-primary px-6 py-[0.8rem] bg-[var(--accent-primary)] text-white border-none rounded-lg font-medium cursor-pointer flex items-center gap-2 hover:scale-105 transition shadow-lg shadow-indigo-500/30 w-full md:w-auto justify-center">
                     <i class="ph-bold ph-user-plus"></i> Add New Staff
                 </button>
             </div>
@@ -87,6 +102,10 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <div class="mt-6">
+            {{ $users->links() }}
         </div>
 
 

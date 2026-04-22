@@ -42,21 +42,24 @@ class StaffDashboardController extends Controller
             'rfid_code.required' => 'Quên quẹt thẻ rồi nhân viên ơi!',
             'rfid_code.exists' => 'Mã thẻ này không tồn tại trong hệ thống kho.',
             'license_plate.required' => 'Bắt buộc phải nhập biển số xe lúc Check-in.',
-            'vehicle_type_id.required' => '',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->with('error', $validator->errors()->first())
-                ->withInput();
+            toast($validator->errors()->first(), 'error');
+            return redirect()->back()->withInput();
+        }
+
+        // --- VALIDATE BIỂN SỐ XE ---
+        if (!is_valid_vehicle_plate($request->license_plate)) {
+            toast('Biển số xe không đúng định dạng Việt Nam. Vui lòng kiểm tra lại!', 'error');
+            return redirect()->back()->withInput();
         }
 
         try {
             $session = DB::transaction(function () use ($request) {
-                $card = Cards::where('rfid_code', $request->rfid_code)->first();
-
+                $card = Cards::where('rfid_code', $request->rfid_code)->lockForUpdate()->first();
 
                 if ($card->status === 'inuse' || $card->status === 'lost') {
                     throw new \Exception("Thẻ này đang được sử dụng hoặc đã báo mất, không thể check-in!");
@@ -81,7 +84,7 @@ class StaffDashboardController extends Controller
                 $newSession = ParkingSessions::create([
                     'card_id' => $card->id,
                     'ticket_type_id' => $ticket_type->id,
-                    'license_plate' => $request->license_plate,
+                    'license_plate' => strtoupper(trim($request->license_plate)), // Chuẩn hóa biển số
                     'check_in_time' => now(),
                     'staff_id_in' => Auth::id() ?? 1,
                     'status' => 'parking',
@@ -94,10 +97,12 @@ class StaffDashboardController extends Controller
                 return $newSession;
             });
 
-            return redirect()->back()->with('success', "Xe {$session->license_plate} đã vào bãi thành công!");
+            toast("Xe {$session->license_plate} đã vào bãi thành công!", 'success');
+            return redirect()->back();
 
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            toast($e->getMessage(), 'error');
+            return redirect()->back();
         }
     }
 
@@ -115,15 +120,20 @@ class StaffDashboardController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->with('error', $validator->errors()->first())
-                ->withInput();
+            toast($validator->errors()->first(), 'error');
+            return redirect()->back()->withInput();
+        }
+
+        // --- VALIDATE BIỂN SỐ XE ---
+        if (!is_valid_vehicle_plate($request->license_plate)) {
+            toast('Biển số xe không đúng định dạng. Vui lòng kiểm tra lại!', 'error');
+            return redirect()->back()->withInput();
         }
 
         try {
             $checkoutData = DB::transaction(function () use ($request) {
-
-                $card = Cards::where('rfid_code', $request->rfid_code)->first();
+                // Lock thẻ để tránh race condition
+                $card = Cards::where('rfid_code', $request->rfid_code)->lockForUpdate()->first();
 
                 // Tìm xe đang đỗ bằng thẻ này
                 $session = ParkingSessions::where('card_id', $card->id)
@@ -134,7 +144,11 @@ class StaffDashboardController extends Controller
                     throw new \Exception("Thẻ này chưa check-in hoặc xe đã ra khỏi bãi!");
                 }
 
-//                $amount = 10000; // Hoặc lấy từ TicketTypes::find($session->ticket_type_id)->price;
+                // Kiểm tra biển số lúc ra có khớp lúc vào không (Bảo mật thêm)
+                if (strtoupper(trim($request->license_plate)) !== strtoupper(trim($session->license_plate))) {
+                    throw new \Exception("Biển số xe không khớp với lúc vào bãi!");
+                }
+
                 $amount = TicketTypes::find($session->ticket_type_id)->price;
 
                 // Cập nhật Phiên
@@ -144,8 +158,10 @@ class StaffDashboardController extends Controller
                     'status'         => 'completed',
                 ]);
 
-                // Trả thẻ về kho
-                $card->update(['status' => 'available']);
+                // Trả thẻ về kho (Nếu là thẻ vãng lai)
+                if ($card->status === 'inuse') {
+                    $card->update(['status' => 'available']);
+                }
 
                 // Ghi nhận doanh thu
                 Transactions::create([
@@ -162,10 +178,12 @@ class StaffDashboardController extends Controller
             });
 
             $formattedAmount = number_format($checkoutData['amount'], 0, ',', '.');
-            return redirect()->back()->with('success', "Xe {$checkoutData['license_plate']} ra bãi. Thu: {$formattedAmount} VNĐ.");
+            toast("Xe {$checkoutData['license_plate']} ra bãi. Thu: {$formattedAmount} VNĐ.", 'success');
+            return redirect()->back();
 
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            toast($e->getMessage(), 'error');
+            return redirect()->back();
         }
     }
 

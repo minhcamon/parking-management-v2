@@ -9,11 +9,11 @@
     body { overflow: hidden; }
 
     .stat-value {
-        font-family: 'Outfit', sans-serif;
-        font-size: 2rem;
-        font-weight: 700;
+        font-family: 'Be Vietnam Pro', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
         margin: 0.5rem 0;
-        background: linear-gradient(135deg, #1e293b, #6366f1);
+        background: linear-gradient(135deg, var(--text-main), var(--accent-primary));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
@@ -21,9 +21,9 @@
     .stat-label {
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 0.85rem;
-        font-weight: 600;
+        letter-spacing: 0.5px;
+        font-size: 0.75rem;
+        font-weight: 700;
         display:flex;
         align-items:center;
         gap: 8px;
@@ -136,11 +136,11 @@
         <div class="icon-box bg-success-soft">
             <i class="ph-fill ph-currency-dollar"></i>
         </div>
-        <div class="stat-label">Total Revenue</div>
+        <div class="stat-label">Tổng doanh thu</div>
         {{-- Format number to currency style VNĐ --}}
         <div class="stat-value">{{ number_format($totalRevenue, 0, ',', '.') }} đ</div>
         <div class="text-[var(--text-muted)] text-[0.85rem]">
-            <i class="ph ph-trend-up text-[#34d399]"></i> +12% from last month
+            <i class="ph ph-trend-up text-[#34d399]"></i> +12% so với tháng trước
         </div>
     </div>
 
@@ -150,9 +150,9 @@
             <i class="ph-fill ph-car-profile"></i>
         </div>
         <div class="stat-label justify-between">
-            Live Parking Slots
+            Tình trạng bãi đỗ (Live)
             <span class="bg-[#6366f1]/10 px-2.5 py-1 rounded-[20px] text-[0.75rem] text-[var(--accent-primary)]">
-                <i class="ph-fill ph-identification-card"></i> {{ $totalCards }} Cards Total
+                <i class="ph-fill ph-identification-card"></i> {{ $totalCards }} Thẻ hệ thống
             </span>
         </div>
         <div class="mt-6">
@@ -163,17 +163,17 @@
                         : 0;
                 @endphp
                 <div class="slot-item">
-                    <div class="w-[80px] font-medium">{{ $type->name }}</div>
+                    <div class="w-[100px] font-bold text-[var(--text-main)]">{{ $type->name }}</div>
                     <div class="progress-wrapper">
                         <div class="progress-bar" style="width: {{ $percentage }}%"></div>
                     </div>
-                    <div class="w-[100px] text-right">
-                        <span class="text-[var(--text-main)] font-bold">{{ $type->slot_remain }}</span> 
-                        <span class="text-[var(--text-muted)]">/ {{ $type->total_slots }}</span>
+                    <div class="w-[120px] text-right">
+                        <span class="text-[var(--text-main)] font-black">{{ $type->slot_remain }}</span> 
+                        <span class="text-[var(--text-muted)] text-[0.8rem]">/ {{ $type->total_slots }} Chỗ</span>
                     </div>
                 </div>
             @empty
-                <p class="text-[var(--text-muted)]">No vehicle types configured yet.</p>
+                <p class="text-[var(--text-muted)]">Chưa có cấu hình loại xe nào.</p>
             @endforelse
         </div>
     </div>
@@ -185,7 +185,7 @@
         <div class="icon-box bg-pink-soft">
             <i class="ph-fill ph-pie-chart"></i>
         </div>
-        <div class="stat-label">Ticket Distribution (Vé Lượt vs Vé Tháng)</div>
+        <div class="stat-label">Cơ cấu loại vé (Lượt vs Tháng)</div>
         
         <div id="ticketChart" class="mt-4 min-h-[220px]"></div>
     </div>
@@ -204,10 +204,10 @@
             chart: {
                 type: 'donut',
                 height: 220,
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'Be Vietnam Pro, sans-serif',
                 background: 'transparent'
             },
-            labels: ['Vé Tháng (Monthly)', 'Vé Lượt (Casual)'],
+            labels: ['Vé Tháng', 'Vé Lượt'],
             colors: ['#6366f1', '#ec4899'],
             plotOptions: {
                 pie: {

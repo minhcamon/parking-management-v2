@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard - Parking Manager')</title>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Be Vietnam Pro (Excellent Vietnamese Support) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -63,22 +63,22 @@
         </div>
         <ul class="nav-items">
             <li class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <a href="{{ route('admin.dashboard') }}"><i class="ph ph-squares-four"></i> Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}"><i class="ph ph-squares-four"></i> Tổng quan</a>
             </li>
             <li class="nav-item {{ request()->routeIs('admin.parking-site.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.parking-site.index') }}"><i class="ph ph-garage"></i> Parking Site</a>
+                <a href="{{ route('admin.parking-site.index') }}"><i class="ph ph-garage"></i> Quản lý bãi đỗ</a>
             </li>
             <li class="nav-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.staff.index') }}"><i class="ph ph-users"></i> Staff & Users</a>
+                <a href="{{ route('admin.staff.index') }}"><i class="ph ph-users"></i> Nhân viên & Người dùng</a>
             </li>
             <li class="nav-item {{ request()->routeIs('admin.monthly-passes.*') ? 'active' : '' }}">
-                <a href="{{ route('admin.monthly-passes.index') }}"><i class="ph ph-identification-card"></i> Monthly Passes</a>
+                <a href="{{ route('admin.monthly-passes.index') }}"><i class="ph ph-identification-card"></i> Vé tháng (Passes)</a>
             </li>
             <li class="nav-item {{ request()->routeIs('admin.reports.transactions') ? 'active' : '' }}">
-                <a href="{{ route('admin.reports.transactions') }}"><i class="ph ph-list-dashes"></i> Transactions</a>
+                <a href="{{ route('admin.reports.transactions') }}"><i class="ph ph-list-dashes"></i> Lịch sử giao dịch</a>
             </li>
             <li class="nav-item {{ request()->routeIs('admin.reports.revenue') ? 'active' : '' }}">
-                <a href="{{ route('admin.reports.revenue') }}"><i class="ph ph-chart-line-up"></i> Revenue Reports</a>
+                <a href="{{ route('admin.reports.revenue') }}"><i class="ph ph-chart-line-up"></i> Báo cáo doanh thu</a>
             </li>
         </ul>
 

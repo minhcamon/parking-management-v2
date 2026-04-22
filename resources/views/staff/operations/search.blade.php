@@ -2,54 +2,120 @@
 @section('title', 'Search - Staff')
 
 @section('content')
-<div class="max-w-[800px] mx-auto">
-    
-    <div class="text-center mb-12 mt-8">
-        <i class="ph-fill ph-magnifying-glass text-[3rem] text-[var(--accent-primary)] mb-4"></i>
-        <h2 class="font-['Outfit'] text-[2rem] text-[var(--text-main)] mb-2">Quick Search</h2>
-        <p class="text-[var(--text-muted)]">Lookup vehicle passing info by Card ID or License Plate</p>
-    </div>
+    <div class="max-w-[800px] mx-auto">
 
-    <div class="premium-card mb-8 !p-[10px]">
-        <div class="flex items-center">
-            <input type="text" placeholder="Enter License Plate or scan Card..." class="flex-1 p-6 text-[1.2rem] border-none bg-transparent text-[var(--text-main)] outline-none font-mono" autofocus>
-            <button class="btn btn-primary px-10 py-[1.2rem] bg-[var(--accent-primary)] text-white border-none rounded-xl font-semibold text-[1.1rem] cursor-pointer mr-[5px]">
-                Search
-            </button>
-        </div>
-    </div>
-
-    <!-- Example Result Placeholder: Found Monthly Pass -->
-    <div class="premium-card border-l-[5px] border-l-[#10b981]">
-        <div class="flex justify-between items-start mb-6">
-            <div>
-                <span class="bg-[#10b981]/20 text-[#34d399] px-3 py-1.5 rounded-[20px] text-[0.85rem] font-bold tracking-[0.5px]"><i class="ph-fill ph-check-circle"></i> MATCH FOUND</span>
-            </div>
-            <div class="text-right">
-                <div class="font-['Outfit'] text-[1.2rem] font-bold text-[var(--text-main)]">Monthly Pass</div>
-                <div class="text-[#10b981] font-semibold">ACTIVE</div>
-            </div>
+        <div class="text-center mb-12 mt-8">
+            <i class="ph-fill ph-magnifying-glass text-[3rem] text-[var(--accent-primary)] mb-4"></i>
+            <h2 class="font-['Outfit'] text-[2rem] text-[var(--text-main)] mb-2">Quick Search</h2>
+            <p class="text-[var(--text-muted)]">Lookup vehicle passing info by Card ID or License Plate</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 border-t border-black/5 pt-6">
-            <div>
-                <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5">License Plate</div>
-                <div class="text-[1.5rem] font-bold font-mono text-[var(--text-main)]">29A-12345</div>
-            </div>
-            <div>
-                <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5">Owner</div>
-                <div class="text-[1.2rem] font-semibold text-[var(--text-main)]">Nguyen Van A</div>
-            </div>
-            <div>
-                <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5">Card ID Assigned</div>
-                <div class="text-[1.2rem] font-semibold text-[var(--text-main)]">A1B2C3D4</div>
-            </div>
-            <div>
-                <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5">Expiration Date</div>
-                <div class="text-[1.2rem] font-semibold text-[var(--text-main)]">01/10/2026 <span class="text-[0.9rem] text-[#10b981]">(160 days left)</span></div>
-            </div>
+        <div class="premium-card mb-8 !p-[10px]">
+            <form action="{{ route('staff.operations.search') }}" method="GET" class="flex items-center">
+                <input type="text" name="query" value="{{ $query }}" placeholder="Enter License Plate or scan Card..." class="flex-1 p-6 text-[1.2rem] border-none bg-transparent text-[var(--text-main)] outline-none font-mono" autofocus>
+                <button type="submit" class="btn btn-primary px-10 py-[1.2rem] bg-[var(--accent-primary)] text-white border-none rounded-xl font-semibold text-[1.1rem] cursor-pointer mr-[5px]">
+                    Search
+                </button>
+            </form>
         </div>
-    </div>
 
-</div>
+        @if($query && $sessions->isEmpty() && $passes->isEmpty())
+            <div class="premium-card text-center py-12">
+                <i class="ph ph-warning-circle text-[3rem] text-orange-400 mb-4"></i>
+                <h3 class="font-bold text-[1.2rem]">No information found</h3>
+                <p class="text-[var(--text-muted)]">We couldn't find any active session or monthly pass matching "{{ $query }}"</p>
+            </div>
+        @endif
+
+        @foreach($sessions as $session)
+            <div class="premium-card border-l-[5px] border-l-[#10b981] mb-6">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                    <span class="bg-[#10b981]/20 text-[#34d399] px-3 py-1.5 rounded-[20px] text-[0.85rem] font-bold tracking-[0.5px] uppercase">
+                        <i class="ph-fill ph-check-circle"></i> Active Session
+                    </span>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-['Outfit'] text-[1.2rem] font-bold text-[var(--text-main)]">
+                            {{ $session->ticket_type->vehicleType->name ?? 'Vehicle' }}
+                        </div>
+                        <div class="text-[#34d399] font-bold">INSIDE</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-black/5 pt-6">
+                    <div>
+                        <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5 uppercase font-bold tracking-wider">License Plate</div>
+                        <div class="text-[1.8rem] font-black font-mono text-[var(--accent-primary)]">{{ $session->license_plate }}</div>
+                    </div>
+                    <div>
+                        <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5 uppercase font-bold tracking-wider">Check-in Time</div>
+                        <div class="text-[1.2rem] font-semibold text-[var(--text-main)]">
+                            {{ \Carbon\Carbon::parse($session->check_in_time)->format('H:i d/m/Y') }}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5 uppercase font-bold tracking-wider">Card RFID</div>
+                        <div class="text-[1.2rem] font-semibold text-[var(--text-main)]">{{ $session->card->rfid_code ?? 'N/A' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5 uppercase font-bold tracking-wider">Duration</div>
+                        <div class="text-[1.2rem] font-semibold text-[var(--text-main)]">
+                            {{ \Carbon\Carbon::parse($session->check_in_time)->diffForHumans(null, true) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+
+        @foreach($passes as $pass)
+            <div class="premium-card border-l-[5px] border-l-[#6366f1] mb-6">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                    <span class="bg-[#6366f1]/20 text-[#6366f1] px-3 py-1.5 rounded-[20px] text-[0.85rem] font-bold tracking-[0.5px] uppercase">
+                        <i class="ph-fill ph-identification-card"></i> Monthly Pass
+                    </span>
+                    </div>
+                    @php
+                        $isExpired = \Carbon\Carbon::parse($pass->end_date)->isPast();
+                    @endphp
+                    <div class="text-right">
+                        <div class="font-['Outfit'] text-[1.2rem] font-bold text-[var(--text-main)]">
+                            {{ $pass->ticket_type->name ?? 'Category' }}
+                        </div>
+                        <div class="{{ $isExpired ? 'text-red-500' : 'text-[#6366f1]' }} font-bold">
+                            {{ $isExpired ? 'EXPIRED' : 'ACTIVE' }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-black/5 pt-6">
+                    <div>
+                        <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5 uppercase font-bold tracking-wider">License Plate</div>
+                        <div class="text-[1.8rem] font-black font-mono text-[var(--text-main)]">{{ $pass->license_plate }}</div>
+                    </div>
+                    <div>
+                        <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5 uppercase font-bold tracking-wider">Subscriber</div>
+                        <div class="text-[1.2rem] font-semibold text-[var(--text-main)] uppercase">{{ $pass->customer_name }}</div>
+                    </div>
+                    <div>
+                        <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5 uppercase font-bold tracking-wider">Card RFID</div>
+                        <div class="text-[1.2rem] font-semibold text-[var(--text-main)]">{{ $pass->card->rfid_code ?? 'N/A' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-[var(--text-muted)] text-[0.85rem] mb-1.5 uppercase font-bold tracking-wider">Valid Until</div>
+                        <div class="text-[1.2rem] font-semibold {{ $isExpired ? 'text-red-500' : 'text-[var(--text-main)]' }}">
+                            {{ \Carbon\Carbon::parse($pass->end_date)->format('d/m/Y') }}
+                            @if(!$isExpired)
+                                <span class="text-[0.9rem] text-[#10b981] font-normal italic">
+                                ({{ \Carbon\Carbon::now()->diffInDays($pass->end_date) }} days left)
+                            </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+
+    </div>
 @endsection
