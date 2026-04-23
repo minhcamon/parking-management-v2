@@ -43,6 +43,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // User & Staff Management
     Route::get('/staff', [StaffManagerController::class, 'index'])->name('staff.index');
+    Route::post('/staff', [StaffManagerController::class, 'store'])->name('staff.store');
+    Route::put('/staff/{id}', [StaffManagerController::class, 'update'])->name('staff.update');
+    Route::delete('/staff/{id}', [StaffManagerController::class, 'destroy'])->name('staff.destroy');
 
     // Monthly Passes
     Route::get('/monthly-passes', [AdminMonthlyPassController::class, 'index'])->name('monthly-passes.index');

@@ -16,9 +16,18 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            
+            // Chặn đăng nhập nếu tài khoản bị Inactive
+            if (!$user->is_active) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Tài khoản của bạn đã bị ngừng hoạt động. Vui lòng liên hệ Admin.',
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
 
-            $user = Auth::user();
             if ($user->role === 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
             }

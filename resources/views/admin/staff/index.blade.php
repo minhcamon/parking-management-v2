@@ -92,15 +92,21 @@
                             </td>
 
                             <td class="p-4 text-right">
-                                <button @click="showModal = true; modalMode = 'edit'; staffData = { id: '{{ $u['id'] ?? '' }}', name: '{{ $u['name'] }}', email: '{{ $u['email'] }}', role: '{{ $u['role_label'] }}', is_active: {{ $u['is_active'] ?? 1 }} }"
-                                        class="btn p-2 hover:bg-indigo-50 mr-2 p-2 rounded-lg btn-ghost">
-                                    <i class="ph-fill ph-pencil-simple text-lg"></i>
-                                </button>
+                                @if($u['can_edit'])
+                                    <button @click="showModal = true; modalMode = 'edit'; staffData = { id: '{{ $u['id'] }}', name: '{{ $u['name'] }}', email: '{{ $u['email'] }}', role: '{{ $u['role'] }}', is_active: {{ $u['is_active'] ? 1 : 0 }} }"
+                                            class="btn p-2 hover:bg-indigo-50 mr-2 p-2 rounded-lg btn-ghost">
+                                        <i class="ph-fill ph-pencil-simple text-lg"></i>
+                                    </button>
+                                @endif
 
                                 @if($u['can_delete'])
-                                    <button class="btn p-2 hover:bg-red-500/10 p-2 rounded-lg btn-ghost text-red-500">
-                                        <i class="ph-fill ph-trash text-lg"></i>
-                                    </button>
+                                    <form action="{{ route('admin.staff.destroy', $u['id']) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhân viên này? Thao tác này không thể hoàn tác.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn p-2 hover:bg-red-500/10 rounded-lg btn-ghost text-red-500">
+                                            <i class="ph-fill ph-trash text-lg"></i>
+                                        </button>
+                                    </form>
                                 @endif
                             </td>
                         </tr>
@@ -145,7 +151,8 @@
                     </button>
                 </div>
 
-                <form action="{{-- route('staff.save') --}}" method="POST" class="flex flex-col gap-4">
+                <form :action="modalMode === 'add' ? '{{ route('admin.staff.store') }}' : '{{ route('admin.staff.update', 'DUMMY_ID') }}'.replace('DUMMY_ID', staffData.id)" 
+                      method="POST" class="flex flex-col gap-4">
                     @csrf
                     <template x-if="modalMode === 'edit'">
                         <input type="hidden" name="_method" value="PUT">
@@ -173,7 +180,6 @@
                             <select name="role" x-model="staffData.role" required
                                     class="w-full p-2.5 text-[0.95rem] rounded-xl border border-header-border bg-nav-hover outline-none focus:border-accent focus:bg-transparent transition font-medium">
                                 <option value="staff">Nhân viên (Staff)</option>
-                                <option value="manager">Quản lý bãi (Manager)</option>
                                 <option value="admin">Quản trị viên (Admin)</option>
                             </select>
                         </div>

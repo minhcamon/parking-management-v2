@@ -15,6 +15,7 @@ class ParkingSiteController extends Controller
     public function index(Request $request)
     {
         $vehicles = VehicleTypes::all();
+        $ticketTypes = TicketTypes::with('vehicle_type')->get();
         $query = Cards::query();
 
         $query->when($request->search, function ($q, $search) {
@@ -27,7 +28,7 @@ class ParkingSiteController extends Controller
 
         $cards = $query->latest()->paginate(10)->withQueryString();
 
-        return view('admin.parking-site.index')->with(compact('vehicles', 'cards'));
+        return view('admin.parking-site.index')->with(compact('vehicles', 'cards', 'ticketTypes'));
     }
 
     public function getFormData()

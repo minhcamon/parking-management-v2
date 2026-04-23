@@ -3,7 +3,7 @@
 @section('page-title', 'Vehicle Types & Card Management')
 
 @section('content')
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6"
+    <div class="grid grid-cols-1 lg:grid-cols-[4fr_5fr] gap-6"
          x-data="{
         showCardModal: false,
         isBulk: false,
@@ -66,16 +66,42 @@
                     </h3>
                 </div>
 
-                <div class="flex flex-col gap-2">
-                    <div class="flex justify-between items-center p-3 rounded-xl bg-nav-hover border border-header-border">
-                        <div class="text-sm font-bold">Vé Lượt (Xe Máy)</div>
-                        <div class="text-sm font-black text-[#10b981]">5,000 đ</div>
-                    </div>
-                    <div class="flex justify-between items-center p-3 rounded-xl bg-nav-hover border border-header-border">
-                        <div class="text-sm font-bold">Vé Tháng (Xe Máy)</div>
-                        <div class="text-sm font-black text-[#10b981]">100,000 đ</div>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-left">
+                        <thead>
+                            <tr class="border-b border-header-border text-muted text-[0.7rem] uppercase font-bold tracking-wider">
+                                <th class="pb-3 pr-2">Tên vé</th>
+                                <th class="pb-3 px-2">Loại xe</th>
+                                <th class="pb-3 px-2">Giá</th>
+                                <th class="pb-3 pl-2 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-header-border/50">
+                            @foreach($ticketTypes as $tt)
+                                <tr class="group hover:bg-nav-hover/30 transition-colors">
+                                    <td class="py-3 pr-2">
+                                        <div class="text-sm font-bold text-main">{{ $tt->name }}</div>
+                                        <div class="text-[0.7rem] text-muted">{{ $tt->type === 'pass' ? 'Vé tháng' : 'Vé lượt' }}</div>
+                                    </td>
+                                    <td class="py-3 px-2">
+                                        <span class="text-xs font-medium text-muted bg-nav-hover px-2 py-1 rounded">
+                                            {{ $tt->vehicle_type->name }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-2">
+                                        <div class="text-sm font-black text-[#10b981]">{{ number_format($tt->price, 0, ',', '.') }} đ</div>
+                                    </td>
+                                    <td class="py-3 pl-2 text-right">
+                                        <button class="bg-dropdown-bg/50 w-8 h-8 rounded-lg border-none text-muted hover:text-accent cursor-pointer transition flex items-center justify-center ml-auto">
+                                            <i class="ph-fill ph-pencil-simple text-sm"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
+
                 <div class="mt-4 pt-4 border-t border-header-border">
                     <button class="w-full py-2.5 rounded-xl border-2 border-dashed border-header-border text-muted text-[0.8rem] font-bold hover:border-accent hover:text-accent transition cursor-pointer bg-transparent">
                         + Thêm loại vé mới
