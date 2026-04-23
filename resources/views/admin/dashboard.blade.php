@@ -132,26 +132,26 @@
 
 <div class="stats-grid">
     <!-- 1. Total Revenue Card -->
-    <div class="premium-card">
+    <x-card>
         <div class="icon-box bg-success-soft">
             <i class="ph-fill ph-currency-dollar"></i>
         </div>
         <div class="stat-label">Tổng doanh thu</div>
         {{-- Format number to currency style VNĐ --}}
         <div class="stat-value">{{ number_format($totalRevenue, 0, ',', '.') }} đ</div>
-        <div class="text-[var(--text-muted)] text-[0.85rem]">
+        <div class="text-muted text-sm">
             <i class="ph ph-trend-up text-[#34d399]"></i> +12% so với tháng trước
         </div>
-    </div>
+    </x-card>
 
     <!-- 2. Current Vehicle Slot Remain -->
-    <div class="premium-card col-span-2">
+    <x-card class="col-span-2">
         <div class="icon-box bg-primary-soft">
             <i class="ph-fill ph-car-profile"></i>
         </div>
         <div class="stat-label justify-between">
             Tình trạng bãi đỗ (Live)
-            <span class="bg-[#6366f1]/10 px-2.5 py-1 rounded-[20px] text-[0.75rem] text-[var(--accent-primary)]">
+            <span class="bg-[#6366f1]/10 px-2.5 py-1 rounded-[20px] text-[0.75rem] text-accent">
                 <i class="ph-fill ph-identification-card"></i> {{ $totalCards }} Thẻ hệ thống
             </span>
         </div>
@@ -163,32 +163,32 @@
                         : 0;
                 @endphp
                 <div class="slot-item">
-                    <div class="w-[100px] font-bold text-[var(--text-main)]">{{ $type->name }}</div>
+                    <div class="w-[100px] font-bold text-main">{{ $type->name }}</div>
                     <div class="progress-wrapper">
                         <div class="progress-bar" style="width: {{ $percentage }}%"></div>
                     </div>
                     <div class="w-[120px] text-right">
-                        <span class="text-[var(--text-main)] font-black">{{ $type->slot_remain }}</span> 
-                        <span class="text-[var(--text-muted)] text-[0.8rem]">/ {{ $type->total_slots }} Chỗ</span>
+                        <span class="text-main font-black">{{ $type->slot_remain }}</span> 
+                        <span class="text-muted text-[0.8rem]">/ {{ $type->total_slots }} Chỗ</span>
                     </div>
                 </div>
             @empty
-                <p class="text-[var(--text-muted)]">Chưa có cấu hình loại xe nào.</p>
+                <p class="text-muted">Chưa có cấu hình loại xe nào.</p>
             @endforelse
         </div>
-    </div>
+    </x-card>
 </div>
 
 <div class="stats-grid">
     <!-- 3. Ticket Distribution Chart -->
-    <div class="premium-card col-span-2">
+    <x-card class="col-span-2">
         <div class="icon-box bg-pink-soft">
             <i class="ph-fill ph-pie-chart"></i>
         </div>
         <div class="stat-label">Cơ cấu loại vé (Lượt vs Tháng)</div>
         
         <div id="ticketChart" class="mt-4 min-h-[220px]"></div>
-    </div>
+    </x-card>
 </div>
 
 @endsection

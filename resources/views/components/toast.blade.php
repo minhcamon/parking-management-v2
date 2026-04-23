@@ -68,10 +68,10 @@ window.Toast = {
             <div class="flex-1 flex flex-col justify-center min-h-[32px]">
                 <p class="m-0 text-[0.95rem] font-medium leading-relaxed">${message}</p>
             </div>
-            <button class="shrink-0 text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors cursor-pointer pt-1 bg-transparent border-none" onclick="window.Toast.close(this.closest('.toast-item'))">
+            <button class="shrink-0 text-muted hover:text-main transition-colors cursor-pointer pt-1 bg-transparent border-none" onclick="window.Toast.close(this.closest('.toast-item'))">
                 <i class="ph ph-x text-lg"></i>
             </button>
-            <div class="absolute bottom-0 left-0 h-1 w-full bg-black/5 dark:bg-white/5">
+            <div class="absolute bottom-0 left-0 h-1 w-full bg-nav-hover /5">
                 <div class="h-full bg-current opacity-70 ${colorClass}" style="width: 100%; transition: width ${duration}ms linear;" data-progress></div>
             </div>
         `;

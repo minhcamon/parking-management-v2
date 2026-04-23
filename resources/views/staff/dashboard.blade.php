@@ -184,7 +184,7 @@
 @section('content')
 <div class="pos-grid" x-data="{ mode: 'checkin' }">
     <!-- LEFT PANEL: SCAN AREA -->
-    <div class="scan-panel premium-card">
+    <x-card class="scan-panel">
         <div class="tab-nav">
             <button class="tab-btn"
                     :class="mode === 'checkin' ? 'active-in' : ''"
@@ -208,10 +208,10 @@
                 <div class="flex flex-col gap-4 text-left min-h-[200px]">
                     <!-- RFID Scan -->
                     <div>
-                        <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">1. MÃ THẺ (RFID)</label>
+                        <label class="font-semibold text-muted text-sm mb-1.5 block">1. MÃ THẺ (RFID)</label>
                         <input type="text"
                             name="rfid_code"
-                            class="input-giant p-4 text-[1.5rem] rounded-xl mb-0"
+                            class="input-giant p-4 text-2xl rounded-xl mb-0"
                             placeholder="QUẸT THẺ VÀO ĐÂY..."
                             x-ref="scanInput"
                             autofocus
@@ -221,7 +221,7 @@
                     <div class="flex flex-col gap-4">
 
     <div>
-        <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">2. BIỂN SỐ XE</label>
+        <label class="font-semibold text-muted text-sm mb-1.5 block">2. BIỂN SỐ XE</label>
         <input type="text"
             name="license_plate"
             class="form-input"
@@ -238,7 +238,7 @@
          style="display: none;"
          x-init="$el.style.display = 'block'">
 
-        <label class="font-semibold text-[var(--text-muted)] text-[0.85rem] mb-1.5 block">3. LOẠI XE</label>
+        <label class="font-semibold text-muted text-sm mb-1.5 block">3. LOẠI XE</label>
         <select name="vehicle_type_id" class="form-input">
             <option value="1">Xe Máy (MOTO)</option>
             <option value="2">Ô tô (CAR)</option>
@@ -248,14 +248,14 @@
 </div>
                 </div>
 
-                <button type="submit" class="btn-gradient w-full mt-6 justify-center text-[1.1rem] p-4 rounded-xl">
-                    <i class="ph-fill ph-check-circle text-[1.5rem]"></i>
+                <button type="submit" class="btn-gradient w-full mt-6 justify-center text-lg p-4 rounded-xl">
+                    <i class="ph-fill ph-check-circle text-2xl"></i>
                     <span class="font-bold">XÁC NHẬN <span x-text="mode === 'checkin' ? 'VÀO BÃI' : 'RA BÃI'"></span></span>
                 </button>
 
             </form>
         </div>
-    </div>
+    </x-card>
 
 
     <!-- RIGHT PANEL: WIDGETS -->
@@ -269,23 +269,23 @@
 {{--            <!-- Mock Data -->--}}
 {{--            <div class="slot-row">--}}
 {{--                <div class="flex items-center gap-2">--}}
-{{--                    <i class="ph-fill ph-motorcycle text-[1.5rem] text-[var(--text-muted)]"></i>--}}
+{{--                    <i class="ph-fill ph-motorcycle text-2xl text-muted"></i>--}}
 {{--                    <strong>Xe Máy</strong>--}}
 {{--                </div>--}}
 {{--                <div>--}}
-{{--                    <span class="text-[1.2rem] font-bold text-[#10b981]">185</span>--}}
-{{--                    <span class="text-[var(--text-muted)]">/ 300</span>--}}
+{{--                    <span class="text-xl font-bold text-[#10b981]">185</span>--}}
+{{--                    <span class="text-muted">/ 300</span>--}}
 {{--                </div>--}}
 {{--            </div>--}}
 
 {{--            <div class="slot-row">--}}
 {{--                <div class="flex items-center gap-2">--}}
-{{--                    <i class="ph-fill ph-car text-[1.5rem] text-[var(--text-muted)]"></i>--}}
+{{--                    <i class="ph-fill ph-car text-2xl text-muted"></i>--}}
 {{--                    <strong>Ô Tô</strong>--}}
 {{--                </div>--}}
 {{--                <div>--}}
-{{--                    <span class="text-[1.2rem] font-bold text-[#f59e0b]">5</span>--}}
-{{--                    <span class="text-[var(--text-muted)]">/ 50</span>--}}
+{{--                    <span class="text-xl font-bold text-[#f59e0b]">5</span>--}}
+{{--                    <span class="text-muted">/ 50</span>--}}
 {{--                </div>--}}
 {{--            </div>--}}
 
@@ -293,14 +293,14 @@
                 @foreach($liveAvailability as $slot)
                     <div class="slot-row">
                         <div class="flex items-center gap-2">
-                            <i class="ph-fill {{ $slot['icon'] }} text-[1.5rem] text-[var(--text-muted)]"></i>
+                            <i class="ph-fill {{ $slot['icon'] }} text-2xl text-muted"></i>
                             <strong>{{ $slot['name'] }}</strong>
                         </div>
                         <div>
-                <span class="text-[1.2rem] font-bold {{ $slot['color_class'] }}">
+                <span class="text-xl font-bold {{ $slot['color_class'] }}">
                     {{ $slot['occupied'] }}
                 </span>
-                            <span class="text-[var(--text-muted)]">/ {{ $slot['total'] }}</span>
+                            <span class="text-muted">/ {{ $slot['total'] }}</span>
                         </div>
                     </div>
                 @endforeach
@@ -316,20 +316,20 @@
 
                 <div class="history-list overflow-y-auto">
                     @forelse($recentActivity as $activity)
-                        <div class="history-item flex items-center p-3 border-b border-gray-100 last:border-0">
+                        <div class="history-item flex items-center p-3 border-b border-header-border last:border-0">
 
                             <div class="{{ $activity['badge_class'] }} mr-3">
                                 {{ $activity['type'] }}
                             </div>
 
                             <div class="grow">
-                                <div class="font-medium text-[var(--text-main)]">{{ $activity['plate'] }}</div>
-                                <div class="text-[0.8rem] text-[var(--text-muted)] mt-0.5">
+                                <div class="font-medium text-main">{{ $activity['plate'] }}</div>
+                                <div class="text-[0.8rem] text-muted mt-0.5">
                                     {{$activity['rfid']  }} • {{ $activity['vehicle'] }}
                                 </div>
                             </div>
 
-                            <div class="text-[0.8rem] text-[var(--text-muted)] text-right">
+                            <div class="text-[0.8rem] text-muted text-right">
                                 <span>{{ $activity['time'] }}</span><br>
 
                                 @if($activity['amount'] > 0)
@@ -341,7 +341,7 @@
 
                         </div>
                     @empty
-                        <div class="p-5 text-center text-[var(--text-muted)] italic">
+                        <div class="p-5 text-center text-muted italic">
                             Chưa có hoạt động nào.
                         </div>
                     @endforelse

@@ -1,12 +1,341 @@
-@import 'tailwindcss';
-@import './theme.css' layer(components);
+@import "tailwindcss";
+@config "../../tailwind.config.js";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+@layer base {
+    :root {
+        --bg-color: #f1f5f9;
+        --accent-primary: #6366f1;
+        --accent-secondary: #ec4899;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.8);
+        --nav-hover-bg: rgba(0, 0, 0, 0.05);
+        --header-border: rgba(0, 0, 0, 0.05);
+        --profile-hover-border: rgba(99, 102, 241, 0.4);
+        --card-shadow: rgba(148, 163, 184, 0.3);
+        --card-hover-shadow: rgba(148, 163, 184, 0.5);
+        --card-hover-border: rgba(255, 255, 255, 1);
+        --dropdown-bg: #fff;
+        --dropdown-hover: #f1f5f9;
+        --sidebar-width: 280px;
+        --transition-speed: 0.3s;
+        --input-bg: rgba(255, 255, 255, 0.5);
+        --input-border: rgba(148, 163, 184, 0.3);
+        --input-focus-border: var(--accent-primary);
+        --input-focus-shadow: rgba(99, 102, 241, 0.2);
+        --input-text: var(--text-main);
+        --input-placeholder: #94a3b8;
+    }
+
+    :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg-color: #0d0e15;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --glass-bg: rgba(30, 41, 59, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --nav-hover-bg: rgba(255, 255, 255, 0.05);
+        --header-border: rgba(255, 255, 255, 0.05);
+        --profile-hover-border: rgba(255, 255, 255, 0.2);
+        --card-shadow: rgba(0, 0, 0, 0.5);
+        --card-hover-shadow: rgba(0, 0, 0, 0.7);
+        --card-hover-border: rgba(255, 255, 255, 0.15);
+        --dropdown-bg: #1e293b;
+        --dropdown-hover: rgba(255, 255, 255, 0.05);
+        --input-bg: rgba(30, 41, 59, 0.5);
+        --input-border: rgba(255, 255, 255, 0.1);
+        --input-focus-shadow: rgba(99, 102, 241, 0.4);
+        --input-placeholder: #64748b;
+    }
+
+    body {
+        @apply font-sans bg-main text-main min-h-screen flex overflow-x-hidden;
+        background-image:
+            radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 25%),
+            radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15) 0%, transparent 25%);
+        background-attachment: fixed;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-sans font-bold;
+    }
+
+    /* Form Elements */
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="number"],
+    input[type="search"],
+    input[type="url"],
+    input[type="date"],
+    input[type="tel"],
+    textarea,
+    select,
+    .form-control {
+        @apply w-full py-3 px-4 font-inter text-base text-input-text bg-input-bg border border-input-border rounded-xl backdrop-blur-md transition-all duration-speed outline-none;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        @apply text-input-placeholder opacity-100;
+    }
+
+    .form-control:hover,
+    input:is([type="text"], [type="password"], [type="email"], [type="number"], [type="search"], [type="url"], [type="date"], [type="tel"]):hover,
+    textarea:hover,
+    select:hover {
+        @apply border-accent-primary/50;
+    }
+
+    .form-control:focus,
+    input:is([type="text"], [type="password"], [type="email"], [type="number"], [type="search"], [type="url"], [type="date"], [type="tel"]):focus,
+    textarea:focus,
+    select:focus {
+        @apply bg-dropdown-bg border-input-focus-border ring-4 ring-input-focus-shadow;
+    }
+
+    input:disabled, textarea:disabled, select:disabled,
+    input[readonly], textarea[readonly], select[readonly] {
+        @apply bg-slate-400/10 text-muted cursor-not-allowed border-input-border;
+    }
+
+    textarea {
+        @apply min-h-[120px] resize-y;
+    }
+
+    select.form-control {
+        @apply appearance-none bg-no-repeat bg-[right_1rem_center] cursor-pointer pr-10;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%23334155' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-size: 1.2rem auto;
+    }
+
+    :root[data-theme="dark"] select.form-control {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%23f8fafc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    }
+
+    select option {
+        @apply bg-dropdown-bg text-main p-2.5;
+    }
+
+    select option:hover,
+    select option:focus,
+    select option:active {
+        @apply bg-accent-primary text-white;
+    }
+
+    input[type="date"] {
+        @apply relative uppercase font-sans tracking-wide text-main;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        @apply cursor-pointer opacity-50 transition-all duration-speed p-1 hover:opacity-100 hover:scale-110;
+    }
+
+    :root[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+        @apply invert opacity-70 hover:opacity-100;
+    }
+
+    input[type="tel"] {
+        @apply font-outfit tracking-wider font-medium text-[1.05rem];
+    }
+}
+
+@layer components {
+    /* Global Components translated to Tailwind */
+    .ambient-glow {
+        @apply fixed -top-1/2 -left-1/2 w-[200%] h-[200%] pointer-events-none -z-10 animate-[spin_30s_linear_infinite];
+        background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(99, 102, 241, 0.1) 120deg, rgba(236, 72, 153, 0.1) 240deg, transparent 360deg);
+    }
+
+    .premium-card {
+        @apply bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 transition-all duration-speed;
+        box-shadow: 0 20px 40px -10px var(--card-shadow);
+    }
+
+    .premium-card:hover {
+        @apply -translate-y-1 border-card-hover-border;
+        box-shadow: 0 30px 60px -15px var(--card-hover-shadow);
+    }
+
+    /* Standardized Central Button Components */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 font-bold cursor-pointer transition-all duration-speed whitespace-nowrap active:scale-95 disabled:opacity-50 disabled:pointer-events-none no-underline relative;
+    }
+
+    .btn-sm {
+        @apply px-4 py-2 text-sm rounded-lg;
+    }
+
+    .btn-md {
+        @apply px-5 py-2.5 text-base rounded-xl;
+    }
+
+    .btn-lg {
+        @apply px-6 py-3 text-lg rounded-xl;
+    }
+
+    .btn-primary {
+        @apply bg-accent backdrop-blur-md border border-white/20 text-white shadow-lg shadow-indigo-500/20 hover:scale-[1.02] hover:bg-accent hover:border-white/30;
+    }
+
+    .btn-secondary {
+        @apply bg-accent-secondary backdrop-blur-md border border-white/20 text-white shadow-lg shadow-pink-500/20 hover:scale-[1.02] hover:bg-accent-secondary hover:border-white/30;
+    }
+
+    .btn-ghost {
+        @apply bg-nav-hover backdrop-blur-md border border-header-border text-main hover:bg-dropdown-bg hover:text-accent hover:border-glass-border hover:shadow-sm;
+    }
+
+    .btn-danger {
+        @apply bg-red-500/10 backdrop-blur-md border border-red-500/20 text-red-500 hover:bg-dropdown-bg hover:text-red-600 hover:border-red-500/40 hover:shadow-sm;
+    }
+
+    .btn-gradient {
+        @apply inline-flex items-center justify-center gap-2 font-bold cursor-pointer transition-all duration-speed whitespace-nowrap active:scale-95 disabled:opacity-50 disabled:pointer-events-none no-underline relative px-6 py-3 text-lg rounded-xl text-white font-sans font-semibold;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    }
+
+    .btn-gradient:hover {
+        @apply scale-105;
+        box-shadow: 0 10px 20px -5px rgba(236, 72, 153, 0.4);
+    }
+
+    /* Layout Components */
+    .sidebar {
+        @apply w-sidebar h-screen bg-glass-bg backdrop-blur-md border-r border-glass-border fixed top-0 left-0 flex flex-col py-8 px-6 z-[100] transition-transform duration-speed;
+    }
+
+    .brand {
+        @apply flex items-center gap-3 mb-12 px-4;
+    }
+
+    .brand i {
+        @apply text-[2rem] text-accent-primary;
+    }
+
+    .brand h2 {
+        @apply text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-pink-200;
+    }
+
+    .nav-items {
+        @apply flex flex-col gap-2 list-none;
+    }
+
+    .nav-item a {
+        @apply flex items-center gap-3 p-4 text-muted no-underline rounded-xl transition-all duration-speed relative overflow-hidden;
+    }
+
+    .nav-item a:hover,
+    .nav-item.active a {
+        @apply text-main bg-nav-hover;
+    }
+
+    .nav-item.active a {
+        @apply border-l-[3px] border-accent-primary;
+        background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), transparent);
+    }
+
+    .nav-item a i {
+        @apply text-xl;
+    }
+
+    .main-wrapper {
+        @apply ml-sidebar w-[calc(100%-var(--sidebar-width))] min-h-screen flex flex-col transition-all duration-speed;
+    }
+
+    .header {
+        @apply h-20 flex items-center justify-between px-12 bg-transparent border-b border-header-border;
+    }
+
+    .header-title {
+        @apply text-[1.4rem] font-medium;
+    }
+
+    .user-profile {
+        @apply relative;
+    }
+
+    .user-profile-trigger {
+        @apply flex items-center gap-4 bg-glass-bg py-2 px-4 rounded-[50px] border border-glass-border cursor-pointer transition-colors duration-speed hover:border-profile-hover;
+    }
+
+    .user-profile-trigger img {
+        @apply w-9 h-9 rounded-full object-cover;
+    }
+
+    .dropdown-menu {
+        @apply absolute top-[110%] right-0 bg-dropdown-bg border border-glass-border rounded-xl shadow-xl min-w-[200px] opacity-0 invisible translate-y-2.5 transition-all duration-200 z-[200] p-2;
+    }
+
+    .dropdown-menu.active {
+        @apply opacity-100 visible translate-y-0;
+    }
+
+    .dropdown-item {
+        @apply flex items-center justify-between py-3 px-4 text-main no-underline rounded-lg transition-colors duration-200 text-sm cursor-pointer hover:bg-dropdown-hover;
+    }
+
+    .dropdown-divider {
+        @apply h-px bg-header-border my-2;
+    }
+
+    .theme-switch {
+        @apply relative inline-block w-11 h-6;
+    }
+
+    .theme-switch input {
+        @apply opacity-0 w-0 h-0;
+    }
+
+    .slider {
+        @apply absolute cursor-pointer inset-0 bg-slate-300 transition-colors duration-[0.4s] rounded-full before:absolute before:content-[''] before:h-[18px] before:w-[18px] before:left-[3px] before:bottom-[3px] before:bg-white before:transition-transform before:duration-[0.4s] before:rounded-full;
+    }
+
+    input:checked + .slider {
+        @apply bg-accent-primary before:translate-x-5;
+    }
+
+    .content {
+        @apply p-12 grow;
+    }
+
+    .stats-grid {
+        @apply grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-8 mb-8;
+    }
+
+    .mobile-toggle {
+        @apply hidden text-2xl text-main bg-none border-none cursor-pointer mr-4;
+    }
+
+    @media (max-width: 768px) {
+        .mobile-toggle {
+            @apply block;
+        }
+
+        .sidebar {
+            @apply -translate-x-full;
+        }
+
+        .sidebar.open {
+            @apply translate-x-0;
+        }
+
+        .main-wrapper {
+            @apply ml-0 w-full;
+        }
+
+        .header {
+            @apply px-6;
+        }
+
+        .content {
+            @apply p-6;
+        }
+    }
 }

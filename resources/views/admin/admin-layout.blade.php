@@ -82,7 +82,7 @@
             </li>
             <div class="dropdown-divider my-4 opacity-50"></div>
             <li class="nav-item">
-                <a href="{{ route('staff.dashboard') }}" target="_blank" class="text-[var(--accent-secondary)]">
+                <a href="{{ route('staff.dashboard') }}" target="_blank" class="text-accent-secondary">
                     <i class="ph ph-desktop"></i> Giao diện POS (Staff)
                 </a>
             </li>
