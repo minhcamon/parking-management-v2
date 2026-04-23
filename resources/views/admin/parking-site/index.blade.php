@@ -6,9 +6,11 @@
     <div class="grid grid-cols-1 lg:grid-cols-[4fr_5fr] gap-6"
          x-data="{
         showCardModal: false,
+        showTicketModal: false,
         isBulk: false,
         modalMode: 'add',
-        cardData: { id: '', rfid_code: '', status: '' }
+        cardData: { id: '', rfid_code: '', status: '' },
+        ticketData: { name: '', price: 0, type: '', vehicle_name: '' }
      }">
 
         <!-- LEFT COLUMN: Configurations -->
@@ -89,10 +91,13 @@
                                         </span>
                                     </td>
                                     <td class="py-3 px-2">
-                                        <div class="text-sm font-black text-[#10b981]">{{ number_format($tt->price, 0, ',', '.') }} đ</div>
+                                        <div class="text-sm font-black {{ $tt->price > 0 ? 'text-[#10b981]' : 'text-muted/30' }}">
+                                            {{ $tt->price > 0 ? number_format($tt->price, 0, ',', '.') . ' đ' : 'Chưa có' }}
+                                        </div>
                                     </td>
                                     <td class="py-3 pl-2 text-right">
-                                        <button class="bg-dropdown-bg/50 w-8 h-8 rounded-lg border-none text-muted hover:text-accent cursor-pointer transition flex items-center justify-center ml-auto">
+                                        <button @click="showTicketModal = true; ticketData = { name: '{{ $tt->name }}', price: {{ $tt->price }}, type: '{{ $tt->type }}', vehicle_name: '{{ $tt->vehicle_type->name }}' }"
+                                                class="bg-dropdown-bg/50 w-8 h-8 rounded-lg border-none text-muted hover:text-accent cursor-pointer transition flex items-center justify-center ml-auto">
                                             <i class="ph-fill ph-pencil-simple text-sm"></i>
                                         </button>
                                     </td>
@@ -103,9 +108,7 @@
                 </div>
 
                 <div class="mt-4 pt-4 border-t border-header-border">
-                    <button class="w-full py-2.5 rounded-xl border-2 border-dashed border-header-border text-muted text-[0.8rem] font-bold hover:border-accent hover:text-accent transition cursor-pointer bg-transparent">
-                        + Thêm loại vé mới
-                    </button>
+                    <p class="text-[0.7rem] text-muted italic">* Bảng giá được cố định theo 4 loại hình cơ bản.</p>
                 </div>
             </x-card>
         </div>
@@ -280,6 +283,49 @@
                                 <button type="submit" class="btn flex-[2] btn-md btn-primary">
                                     <span x-text="isBulk ? 'Bắt đầu tạo thẻ' : (modalMode === 'add' ? 'Lưu thẻ' : 'Cập nhật')"></span>
                                 </button>
+                            </div>
+                        </form>
+                    </div>
+                </x-card>
+            </div>
+            <div x-show="showTicketModal"
+                 style="display: none;"
+                 class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+
+                <div x-show="showTicketModal"
+                     x-transition.opacity.duration.300ms
+                     @click="showTicketModal = false"
+                     class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+                <x-card x-show="showTicketModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100" class="relative w-full max-w-md !p-0 overflow-hidden shadow-2xl">
+
+                    <div class="p-6 border-b border-header-border flex justify-between items-center bg-nav-hover">
+                        <h3 class="text-xl font-bold m-0">Cấu hình giá vé</h3>
+                        <button type="button" @click="showTicketModal = false" class="btn hover:bg-red-500/10 hover:text-red-500 w-8 h-8 rounded-full btn-ghost text-red-500">
+                            <i class="ph-bold ph-x"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-6">
+                        <form action="{{ route('admin.ticket-types.update') }}" method="POST" class="flex flex-col gap-5">
+                            @csrf
+                            <input type="hidden" name="type" x-model="ticketData.type">
+                            <input type="hidden" name="vehicle_name" x-model="ticketData.vehicle_name">
+
+                            <div>
+                                <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Tên hiển thị</label>
+                                <input type="text" name="name" x-model="ticketData.name" required class="!py-2.5 font-bold">
+                            </div>
+
+                            <div>
+                                <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Giá vé (VNĐ)</label>
+                                <input type="number" name="price" x-model="ticketData.price" required min="0" step="500" class="!py-2.5 font-bold text-accent">
+                                <p class="text-[0.7rem] text-muted mt-2 italic">Lưu ý: Nếu giá là 0, hệ thống sẽ coi như loại vé này chưa được cấu hình.</p>
+                            </div>
+
+                            <div class="flex gap-3 mt-4 pt-4 border-t border-header-border">
+                                <button type="button" @click="showTicketModal = false" class="btn flex-1 btn-md btn-ghost">Hủy bỏ</button>
+                                <button type="submit" class="btn flex-[2] btn-md btn-primary">Lưu cấu hình</button>
                             </div>
                         </form>
                     </div>

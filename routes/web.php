@@ -38,6 +38,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/cards', [ParkingSiteController::class, 'store'])->name('cards.store');
     Route::post('/cards/bulk', [ParkingSiteController::class, 'bulkStore'])->name('cards.bulk');
     Route::put('/cards/update/{id}', [ParkingSiteController::class, 'update'])->name('cards.update');
+    Route::post('/ticket-types/update', [ParkingSiteController::class, 'updateTicketType'])->name('ticket-types.update');
 
     Route::put('/vehicles/{id}', [ParkingSiteController::class, 'updateVehicle'])->name('vehicles.update');
 

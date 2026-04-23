@@ -15,7 +15,35 @@ class ParkingSiteController extends Controller
     public function index(Request $request)
     {
         $vehicles = VehicleTypes::all();
-        $ticketTypes = TicketTypes::with('vehicle_type')->get();
+        $rawTickets = TicketTypes::with('vehicle_type')->get();
+
+        // 4 Loại vé cố định theo yêu cầu
+        $fixedKeys = [
+            ['key' => 'casual_motor', 'name' => 'Vé Lượt Xe máy', 'vehicle' => 'Xe Máy', 'type' => 'normal'],
+            ['key' => 'casual_car',   'name' => 'Vé Lượt Ô tô',   'vehicle' => 'Ô Tô',   'type' => 'normal'],
+            ['key' => 'pass_motor',   'name' => 'Vé Tháng Xe máy', 'vehicle' => 'Xe Máy', 'type' => 'pass'],
+            ['key' => 'pass_car',     'name' => 'Vé Tháng Ô tô',   'vehicle' => 'Ô Tô',   'type' => 'pass'],
+        ];
+
+        $ticketTypes = [];
+        foreach ($fixedKeys as $config) {
+            $found = $rawTickets->filter(function($t) use ($config) {
+                return $t->type === $config['type'] && 
+                       (str_contains(strtolower($t->vehicle_type->name), strtolower($config['vehicle'])) || 
+                        str_contains(strtolower($config['vehicle']), strtolower($t->vehicle_type->name)));
+            })->first();
+
+            $ticketTypes[] = $found ?: (object)[
+                'id' => null,
+                'name' => $config['name'],
+                'price' => 0,
+                'type' => $config['type'],
+                'vehicle_type' => $vehicles->filter(function($v) use ($config) {
+                    return str_contains(strtolower($v->name), strtolower($config['vehicle']));
+                })->first() ?: (object)['name' => $config['vehicle'], 'id' => null]
+            ];
+        }
+
         $query = Cards::query();
 
         $query->when($request->search, function ($q, $search) {
@@ -158,5 +186,45 @@ class ParkingSiteController extends Controller
         // Nếu chưa cài toast() bạn dùng: return redirect()->back()->with('success', '...');
         toast('Cập nhật thông tin thẻ thành công!', 'success');
         return redirect()->back();
+    }
+
+    public function updateTicketType(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'type' => 'required|in:normal,pass',
+            'vehicle_name' => 'required|string',
+        ]);
+
+        $vehicle = VehicleTypes::where('name', 'like', "%{$request->vehicle_name}%")->first();
+        
+        if (!$vehicle) {
+            toast('Không tìm thấy cấu hình loại xe ' . $request->vehicle_name . '!', 'error');
+            return back();
+        }
+
+        $ticket = TicketTypes::where('type', $request->type)
+            ->where('vehicle_type_id', $vehicle->id)
+            ->first();
+
+        if ($ticket) {
+            $ticket->update([
+                'price' => $request->price,
+                'name' => $request->name,
+                'is_active' => $request->price > 0
+            ]);
+        } else {
+            TicketTypes::create([
+                'name' => $request->name,
+                'price' => $request->price,
+                'type' => $request->type,
+                'vehicle_type_id' => $vehicle->id,
+                'is_active' => $request->price > 0
+            ]);
+        }
+
+        toast('Cập nhật bảng giá thành công!', 'success');
+        return back();
     }
 }
