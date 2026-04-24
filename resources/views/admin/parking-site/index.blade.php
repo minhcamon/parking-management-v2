@@ -1,6 +1,6 @@
 @extends('admin.admin-layout')
-@section('title', 'Parking Site - Admin')
-@section('page-title', 'Vehicle Types & Card Management')
+@section('title', 'Cấu hình bãi - Admin')
+@section('page-title', 'Quản lý Loại xe & Thẻ RFID')
 
 @section('content')
     <div class="grid grid-cols-1 lg:grid-cols-[4fr_5fr] gap-6"
@@ -75,7 +75,7 @@
                                 <th class="pb-3 pr-2">Tên vé</th>
                                 <th class="pb-3 px-2">Loại xe</th>
                                 <th class="pb-3 px-2">Giá</th>
-                                <th class="pb-3 pl-2 text-right">Action</th>
+                                <th class="pb-3 pl-2 text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-header-border/50">
@@ -166,7 +166,7 @@
                         <tr class="text-muted text-[0.75rem] uppercase font-bold tracking-wider border-b border-header-border">
                             <th class="px-4 py-4">Mã RFID</th>
                             <th class="px-4 py-4">Trạng thái</th>
-                            <th class="px-4 py-4 text-right">Lựa chọn</th>
+                            <th class="px-4 py-4 text-right">Thao tác</th>
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-black/5">

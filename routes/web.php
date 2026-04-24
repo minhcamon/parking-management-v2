@@ -51,6 +51,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Monthly Passes
     Route::get('/monthly-passes', [AdminMonthlyPassController::class, 'index'])->name('monthly-passes.index');
     Route::post('/monthly-passes', [AdminMonthlyPassController::class, 'store'])->name('monthly-passes.store');
+    Route::put('/monthly-passes/{id}', [AdminMonthlyPassController::class, 'update'])->name('monthly-passes.update');
+    Route::delete('/monthly-passes/{id}', [AdminMonthlyPassController::class, 'destroy'])->name('monthly-passes.destroy');
 
     // Reports (History & Revenue)
     Route::get('/reports/transactions', [ReportController::class, 'transactions'])->name('reports.transactions');
@@ -69,6 +71,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     // Operations (Search, Register Pass)
     Route::get('/operations/search', [OperationController::class, 'search'])->name('operations.search');
     Route::get('/operations/register-pass', [OperationController::class, 'registerPass'])->name('operations.register-pass');
+    Route::post('/operations/register-pass', [OperationController::class, 'storePass'])->name('operations.store-pass');
 
     // History & Transactions (Staff scope)
     Route::get('/history', [StaffHistoryController::class, 'index'])->name('history.index');

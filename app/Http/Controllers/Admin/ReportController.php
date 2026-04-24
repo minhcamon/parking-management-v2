@@ -14,11 +14,12 @@ class ReportController extends Controller
     public function transactions(Request $request)
     {
         // 1. Khởi tạo Query với các quan hệ
-        $query = Transactions::with(['session.card', 'staff']);
+        // 1. Khởi tạo Query với các quan hệ
+        $query = Transactions::with(['monthly_pass.card', 'staff']);
 
-        // Search theo Biển số hoặc RFID
+        // Search theo Biển số hoặc RFID (Chỉ áp dụng cho vé tháng vì vé lượt không còn lưu session_id)
         $query->when($request->search, function ($q, $search) {
-            $q->whereHas('session', function ($sub) use ($search) {
+            $q->whereHas('monthly_pass', function ($sub) use ($search) {
                 $sub->where('license_plate', 'like', "%{$search}%")
                     ->orWhereHas('card', function ($card) use ($search) {
                         $card->where('rfid_code', 'like', "%{$search}%");
@@ -29,9 +30,9 @@ class ReportController extends Controller
         // Filter theo loại vé (Vé lượt / Vé tháng)
         $query->when($request->type, function ($q, $type) {
             if ($type === 'casual') {
-                $q->whereNotNull('session_id');
+                $q->whereNull('monthly_pass_id');
             } elseif ($type === 'monthly') {
-                $q->whereNull('session_id');
+                $q->whereNotNull('monthly_pass_id');
             }
         });
 
@@ -45,17 +46,17 @@ class ReportController extends Controller
 
         // 3. Transform dữ liệu cho View
         $transactions->through(function ($t) {
-            $isCasual = !is_null($t->session_id);
+            $isMonthly = !is_null($t->monthly_pass_id);
             return [
                 'id'           => $t->id,
-                'type'         => $isCasual ? "Vé lượt" : "Vé tháng",
-                'bg_color'     => $isCasual ? "bg-[#10b981]/20" : "bg-[#ef4444]/20",
-                'text_color'   => $isCasual ? "text-[#34d399]" : "text-red-500",
+                'type'         => $isMonthly ? "Vé tháng" : "Vé lượt",
+                'bg_color'     => $isMonthly ? "bg-[#ef4444]/20" : "bg-[#10b981]/20",
+                'text_color'   => $isMonthly ? "text-red-500" : "text-[#34d399]",
                 'amount'       => number_format($t->amount, 0, ',', '.') . ' đ',
                 'payment_time' => Carbon::parse($t->payment_time)->format('H:i d/m/Y'),
                 'staff_name'   => $t->staff->name ?? 'N/A',
-                'license_plate'=> $t->session->license_plate ?? 'Pass Holder', // Monthly passes might not have a session in this simple schema
-                'rfid_code'    => $t->session->card->rfid_code ?? $t->monthly_pass->card->rfid_code ?? 'N/A',
+                'license_plate'=> $t->monthly_pass->license_plate ?? 'Khách vãng lai',
+                'rfid_code'    => $t->monthly_pass->card->rfid_code ?? 'N/A',
             ];
         });
 
@@ -106,8 +107,8 @@ class ReportController extends Controller
 
         // 3. Tính toán các KPI (Dùng 'clone' để không làm hỏng câu lệnh gốc)
         $totalRevenue = (clone $baseQuery)->sum('amount');
-        $casualRevenue = (clone $baseQuery)->whereNotNull('session_id')->sum('amount');
-        $monthlyRevenue = (clone $baseQuery)->whereNull('session_id')->sum('amount');
+        $casualRevenue = (clone $baseQuery)->whereNull('monthly_pass_id')->sum('amount');
+        $monthlyRevenue = (clone $baseQuery)->whereNotNull('monthly_pass_id')->sum('amount');
 
         $monthlyPercent = $totalRevenue > 0 ? round(($monthlyRevenue / $totalRevenue) * 100, 1) : 0;
         $casualPercent  = $totalRevenue > 0 ? round(($casualRevenue / $totalRevenue) * 100, 1) : 0;

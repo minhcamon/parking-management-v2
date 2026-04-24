@@ -56,11 +56,11 @@
                 <table class="w-full border-collapse text-left">
                     <thead>
                     <tr class="border-b-2 border-header-border text-muted text-sm uppercase tracking-[0.5px]">
-                        <th class="p-4">User</th>
-                        <th class="p-4">Role</th>
+                        <th class="p-4">Người dùng</th>
+                        <th class="p-4">Vai trò</th>
                         <th class="p-4">Email</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4 text-right">Actions</th>
+                        <th class="p-4">Trạng thái</th>
+                        <th class="p-4 text-right">Thao tác</th>
                     </tr>
                     </thead>
                     <tbody>

@@ -65,7 +65,32 @@ class StaffDashboardController extends Controller
                     throw new \Exception("Thẻ này đang được sử dụng hoặc đã báo mất, không thể check-in!");
                 }
 
+                $licensePlate = strtoupper(trim($request->license_plate));
+                $alreadyInParking = ParkingSessions::where('license_plate', $licensePlate)
+                    ->where('status', 'parking')
+                    ->exists();
+
+                if ($alreadyInParking) {
+                    throw new \Exception("Xe biển số {$licensePlate} hiện đang có trong bãi (Chưa check-out)!");
+                }
+
+                $monthlyPassName = null;
+
                 if ($card->status === 'assigned') {
+                    $monthlyPass = MonthlyPasses::where('card_id', $card->id)
+                        ->where('end_date', '>=', now()->startOfDay())
+                        ->first();
+
+                    if (!$monthlyPass) {
+                        throw new \Exception("Thẻ vé tháng này đã hết hạn hoặc không hợp lệ!");
+                    }
+
+                    // Ưu tiên sử dụng biển số đăng ký vé tháng
+                    if (strtoupper(trim($request->license_plate)) !== strtoupper(trim($monthlyPass->license_plate))) {
+                        throw new \Exception("Biển số xe không khớp với biển số đăng ký vé tháng!");
+                    }
+
+                    $monthlyPassName = $monthlyPass->customer_name;
                     $ticket_type = TicketTypes::where('vehicle_type_id', $request->vehicle_type_id)
                                                 ->where('type', 'pass')
                                                 ->first();
@@ -84,7 +109,7 @@ class StaffDashboardController extends Controller
                 $newSession = ParkingSessions::create([
                     'card_id' => $card->id,
                     'ticket_type_id' => $ticket_type->id,
-                    'license_plate' => strtoupper(trim($request->license_plate)), // Chuẩn hóa biển số
+                    'license_plate' => $licensePlate, // Sử dụng biến đã chuẩn hóa ở trên
                     'check_in_time' => now(),
                     'staff_id_in' => Auth::id() ?? 1,
                     'status' => 'parking',
@@ -94,10 +119,19 @@ class StaffDashboardController extends Controller
                     $card->update(['status' => 'inuse']);
                 }
 
-                return $newSession;
+                return [
+                    'session' => $newSession,
+                    'is_monthly' => $card->status === 'assigned',
+                    'customer_name' => $monthlyPassName
+                ];
             });
 
-            toast("Xe {$session->license_plate} đã vào bãi thành công!", 'success');
+            if ($session['is_monthly']) {
+                toast("Vé tháng - Khách: {$session['customer_name']} - Xe {$session['session']->license_plate} đã vào bãi!", 'success');
+            } else {
+                toast("Xe {$session['session']->license_plate} đã vào bãi thành công!", 'success');
+            }
+
             return redirect()->back();
 
         } catch (\Exception $e) {
@@ -149,7 +183,15 @@ class StaffDashboardController extends Controller
                     throw new \Exception("Biển số xe không khớp với lúc vào bãi!");
                 }
 
-                $amount = TicketTypes::find($session->ticket_type_id)->price;
+                $monthlyPass = MonthlyPasses::where('card_id', $card->id)
+                    ->where('end_date', '>=', now())
+                    ->first();
+
+                if ($card->status === 'assigned') {
+                    $amount = 0;
+                } else {
+                    $amount = TicketTypes::find($session->ticket_type_id)->price;
+                }
 
                 // Cập nhật Phiên
                 $session->update([
@@ -163,13 +205,14 @@ class StaffDashboardController extends Controller
                     $card->update(['status' => 'available']);
                 }
 
-                // Ghi nhận doanh thu
-                Transactions::create([
-                    'session_id'   => $session->id,
-                    'amount'       => $amount,
-                    'payment_time' => now(),
-                    'staff_id'     => Auth::id() ?? 1,
-                ]);
+                // Ghi nhận doanh thu (Chỉ tạo giao dịch nếu là khách vãng lai có phát sinh tiền)
+                if ($amount > 0) {
+                    Transactions::create([
+                        'amount'       => $amount,
+                        'payment_time' => now(),
+                        'staff_id'     => Auth::id() ?? 1,
+                    ]);
+                }
 
                 return [
                     'license_plate' => $session->license_plate,
@@ -252,8 +295,8 @@ class StaffDashboardController extends Controller
 
     private function getRecentActivity()
     {
-        // 1. Kéo 6 giao dịch mới nhất, load kèm thông tin Thẻ, Loại vé và Giao dịch tính tiền
-        $sessions = ParkingSessions::with(['card', 'ticket_type', 'transactions'])
+        // 1. Kéo 6 giao dịch mới nhất, load kèm thông tin Thẻ, Loại vé, Giao dịch và Thẻ tháng
+        $sessions = ParkingSessions::with(['card', 'ticket_type', 'transactions', 'card.monthly_passes'])
             ->latest('updated_at')
             ->take(6)
             ->get();
@@ -265,10 +308,26 @@ class StaffDashboardController extends Controller
             // Xác định loại xe bằng tiếng Việt
             $vehicleName = ($session->ticketType->vehicle_type ?? '') === 'motorbike' ? 'Xe Máy' : 'Ô Tô';
 
+            $isMonthly = $session->ticket_type && $session->ticket_type->type === 'pass';
+            $monthlyPassName = null;
+            if ($isMonthly && $session->card && $session->card->monthly_passes->count() > 0) {
+                // Get the active monthly pass at the time of check_in
+                $pass = $session->card->monthly_passes->where('start_date', '<=', $session->check_in_time)
+                                                      ->where('end_date', '>=', $session->check_in_time)
+                                                      ->first();
+                if ($pass) {
+                    $monthlyPassName = $pass->customer_name;
+                }
+            }
+
             return [
                 // Giao diện Badge
                 'type'        => $isOut ? 'OUT' : 'IN',
                 'badge_class' => $isOut ? 'badge-out' : 'badge-in',
+                
+                // Monthly Tag
+                'is_monthly'  => $isMonthly,
+                'monthly_customer_name' => $monthlyPassName,
 
                 // Thông tin xe
                 'rfid'        => $session->card->rfid_code ?? 'N/A',

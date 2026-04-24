@@ -1,7 +1,7 @@
 @extends('admin.admin-layout')
 
-@section('title', 'Dashboard - ParkGrid')
-@section('page-title', 'Overview Statistics')
+@section('title', 'Tổng quan - ParkGrid')
+@section('page-title', 'Thống kê tổng quát')
 
 @push('styles')
 <style>
@@ -220,7 +220,7 @@
                             total: {
                                 show: true,
                                 showAlways: true,
-                                label: 'Total',
+                                label: 'Tổng số',
                                 color: textColor,
                             }
                         }

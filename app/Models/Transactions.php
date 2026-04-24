@@ -7,17 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Transactions extends Model
 {
     protected $fillable = [
-        'session_id',
         'monthly_pass_id',
         'amount',
         'payment_time',
         'staff_id',
     ];
-
-    public function session()
-    {
-        return $this->belongsTo(ParkingSessions::class, 'session_id');
-    }
 
     public function monthly_pass()
     {

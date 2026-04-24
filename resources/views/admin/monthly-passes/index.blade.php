@@ -3,7 +3,7 @@
 @section('page-title', 'Monthly Passes')
 
 @section('content')
-<div x-data="{ showPassModal: false }">
+<div x-data="{ showPassModal: false, showEditModal: false, editData: {}, allTicketTypes: {{ $ticketTypes->toJson() }} }">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
             <h3 class="text-2xl font-black m-0 mb-1">Danh sách vé tháng</h3>
@@ -86,12 +86,24 @@
                             </td>
                             <td class="px-4 py-4 text-right">
                                 <div class="flex justify-end gap-2">
-                                    <button class="btn p-2 p-2 rounded-lg btn-ghost">
+                                    <button type="button" @click="showEditModal = true; editData = {
+                                        id: {{ $p->id }},
+                                        customer_name: '{{ addslashes($p->customer_name) }}',
+                                        license_plate: '{{ addslashes($p->license_plate) }}',
+                                        vehicle_type_id: '{{ $p->ticket_type->vehicle_type_id ?? '' }}',
+                                        ticket_type_id: '{{ $p->ticket_type_id }}',
+                                        start_date: '{{ \Carbon\Carbon::parse($p->start_date)->format('Y-m-d') }}',
+                                        end_date: '{{ \Carbon\Carbon::parse($p->end_date)->format('Y-m-d') }}'
+                                    }" class="btn p-2 rounded-lg btn-ghost" title="Sửa">
                                         <i class="ph-bold ph-pencil-simple text-base"></i>
                                     </button>
-                                    <button class="bg-red-500/10 p-2 rounded-lg border-none text-red-400 hover:text-red-600 hover:bg-dropdown-bg transition cursor-pointer hover:shadow-sm">
-                                        <i class="ph-bold ph-trash text-base"></i>
-                                    </button>
+                                    <form action="{{ route('admin.monthly-passes.destroy', $p->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa vé tháng này và giải phóng thẻ không?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-500/10 p-2 rounded-lg border-none text-red-400 hover:text-red-600 hover:bg-dropdown-bg transition cursor-pointer hover:shadow-sm" title="Xóa">
+                                            <i class="ph-bold ph-trash text-base"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -127,7 +139,7 @@
                 </button>
             </div>
 
-            <div class="p-6">
+            <div class="p-6" x-data="{ selectedVehicle: '', ticketTypes: {{ $ticketTypes->toJson() }} }">
                 <form action="{{ route('admin.monthly-passes.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     @csrf
                     <div class="md:col-span-2">
@@ -141,23 +153,40 @@
                     </div>
 
                     <div>
-                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Loại vé / Phương tiện <span class="text-red-500">*</span></label>
-                        <select name="ticket_type_id" required class="font-bold">
-                            <option value="">Chọn loại vé...</option>
-                            @foreach($ticketTypes as $tt)
-                                <option value="{{ $tt->id }}">{{ $tt->name }} - {{ number_format($tt->price, 0) }}đ</option>
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Loại phương tiện <span class="text-red-500">*</span></label>
+                        <select x-model="selectedVehicle" required class="font-bold">
+                            <option value="">Chọn phương tiện...</option>
+                            @foreach($vehicleTypes as $vt)
+                                <option value="{{ $vt->id }}">{{ $vt->name }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div>
-                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Thẻ RFID cấp mới <span class="text-red-500">*</span></label>
-                        <select name="card_id" required class="font-mono font-bold">
-                            <option value="">Chọn thẻ...</option>
-                            @foreach($availableCards as $card)
-                                <option value="{{ $card->id }}">{{ $card->rfid_code }}</option>
-                            @endforeach
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Loại vé tháng <span class="text-red-500">*</span></label>
+                        <select name="ticket_type_id" required :disabled="!selectedVehicle" class="font-bold">
+                            <option value="">Chọn loại vé...</option>
+                            <template x-for="type in ticketTypes.filter(t => t.vehicle_type_id == selectedVehicle)" :key="type.id">
+                                <option :value="type.id" x-text="type.name + ' - ' + new Intl.NumberFormat('vi-VN').format(type.price) + 'đ'"></option>
+                            </template>
                         </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Thẻ RFID cấp mới <span class="text-red-500">*</span></label>
+                        @if($availableCard)
+                            <input type="hidden" name="card_id" value="{{ $availableCard->id }}">
+                            <input type="text" value="{{ $availableCard->rfid_code }}" readonly class="font-mono font-bold bg-nav-hover border-transparent">
+                        @else
+                            <div class="text-red-500 text-sm font-bold p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                                Không còn thẻ trống. Vui lòng thêm thẻ mới.
+                            </div>
+                        @endif
+                    </div>
+
+                    <div>
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Ngày bắt đầu <span class="text-red-500">*</span></label>
+                        <input type="date" name="start_date" required class="font-bold">
                     </div>
 
                     <div>
@@ -173,6 +202,71 @@
                     <div class="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-header-border">
                         <button type="button" @click="showPassModal = false" class="btn btn-lg btn-ghost">Hủy bỏ</button>
                         <button type="submit" class="btn btn-lg btn-primary">Xác nhận đăng ký</button>
+                    </div>
+                </form>
+            </div>
+        </x-card>
+    </div>
+    <!-- Modal Sửa vé tháng -->
+    <div x-show="showEditModal"
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+         style="display: none;">
+        <div x-show="showEditModal" @click="showEditModal = false" x-transition.opacity class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <x-card x-show="showEditModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-8 scale-95" class="relative w-full max-w-xl !p-0 overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-header-border flex justify-between items-center bg-nav-hover">
+                <h3 class="text-xl font-bold m-0">Sửa thông tin Vé tháng</h3>
+                <button @click="showEditModal = false" class="btn hover:bg-red-500/10 hover:text-red-500 w-8 h-8 rounded-full btn-ghost text-red-500">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <form :action="`/admin/monthly-passes/${editData.id}`" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    @csrf
+                    @method('PUT')
+                    <div class="md:col-span-2">
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Họ tên khách hàng <span class="text-red-500">*</span></label>
+                        <input type="text" name="customer_name" required x-model="editData.customer_name">
+                    </div>
+
+                    <div>
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Biển số xe <span class="text-red-500">*</span></label>
+                        <input type="text" name="license_plate" readonly class="font-mono uppercase font-bold" x-model="editData.license_plate">
+                    </div>
+
+                    <div>
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Loại phương tiện <span class="text-red-500">*</span></label>
+                        <select readonly x-model="editData.vehicle_type_id" @change="editData.ticket_type_id = ''" required class="font-bold">
+                            <option value="">Chọn phương tiện...</option>
+                            @foreach($vehicleTypes as $vt)
+                                <option value="{{ $vt->id }}">{{ $vt->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Loại vé tháng <span class="text-red-500">*</span></label>
+                        <select readonly name="ticket_type_id" required x-model="editData.ticket_type_id" class="font-bold">
+                            <option value="">Chọn loại vé...</option>
+                            <template x-for="type in allTicketTypes.filter(t => t.vehicle_type_id == editData.vehicle_type_id)" :key="type.id">
+                                <option :value="type.id" x-text="type.name + ' - ' + new Intl.NumberFormat('vi-VN').format(type.price) + 'đ'"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Ngày bắt đầu <span class="text-red-500">*</span></label>
+                        <input type="date" name="start_date" required class="font-bold" x-model="editData.start_date">
+                    </div>
+
+                    <div>
+                        <label class="text-[0.7rem] font-bold text-muted uppercase mb-1.5 block tracking-wider">Ngày hết hạn <span class="text-red-500">*</span></label>
+                        <input type="date" name="end_date" required class="font-bold" x-model="editData.end_date">
+                    </div>
+
+                    <div class="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-header-border">
+                        <button type="button" @click="showEditModal = false" class="btn btn-lg btn-ghost">Hủy bỏ</button>
+                        <button type="submit" class="btn btn-lg btn-primary">Lưu thay đổi</button>
                     </div>
                 </form>
             </div>

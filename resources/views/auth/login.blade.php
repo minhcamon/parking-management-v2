@@ -34,8 +34,8 @@
             <i class="ph-fill ph-car-profile text-3xl text-accent"></i>
             <h2 class="m-0 text-2xl">ParkGrid</h2>
         </div>
-        <h2 class="mb-2">Welcome Back</h2>
-        <p class="text-muted mb-8 text-sm">Sign in to access your workspace.</p>
+        <h2 class="mb-2">Chào mừng trở lại</h2>
+        <p class="text-muted mb-8 text-sm">Đăng nhập để truy cập hệ thống của bạn.</p>
 
         @if ($errors->any())
             <div class="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm">
@@ -51,19 +51,19 @@
             @csrf
             
             <div class="text-left mb-6 relative">
-                <label class="block mb-2 text-sm font-medium text-muted">Email Address</label>
+                <label class="block mb-2 text-sm font-medium text-muted">Địa chỉ Email</label>
                 <i class="ph ph-envelope-simple absolute bottom-[0.9rem] left-4 text-muted text-xl"></i>
-                <input type="email" name="email" class="pl-10 w-full" placeholder="Enter your email" required autofocus>
+                <input type="email" name="email" class="pl-10 w-full" placeholder="Nhập email của bạn" required autofocus>
             </div>
 
             <div class="text-left mb-6 relative">
-                <label class="block mb-2 text-sm font-medium text-muted">Password</label>
+                <label class="block mb-2 text-sm font-medium text-muted">Mật khẩu</label>
                 <i class="ph ph-lock-key absolute bottom-[0.9rem] left-4 text-muted text-xl"></i>
-                <input type="password" name="password" class="pl-10 w-full" placeholder="Enter your password" required>
+                <input type="password" name="password" class="pl-10 w-full" placeholder="Nhập mật khẩu" required>
             </div>
 
             <button type="submit" class="btn-gradient w-full justify-center mt-4">
-                Sign In <i class="ph ph-arrow-right"></i>
+                Đăng nhập <i class="ph ph-arrow-right"></i>
             </button>
         </form>
     </x-card>

@@ -71,10 +71,10 @@
             <div class="icon-box bg-green-100 text-green-600 w-12 h-12 flex items-center justify-center rounded-lg mb-3">
                 <i class="ph-fill ph-money text-2xl"></i>
             </div>
-            <div class="stat-label text-muted text-sm font-semibold uppercase">Total Revenue</div>
+            <div class="stat-label text-muted text-sm font-semibold uppercase">Tổng doanh thu</div>
             <div class="stat-value text-3xl font-black mt-1">{{ $totalRevenue }} đ</div>
             <div class="text-muted text-xs mt-2">
-                <i class="ph ph-calendar text-muted"></i> Selected Period
+                <i class="ph ph-calendar text-muted"></i> Trong khoảng thời gian đã chọn
             </div>
         </x-card>
 
@@ -82,10 +82,10 @@
             <div class="icon-box bg-blue-100 text-blue-600 w-12 h-12 flex items-center justify-center rounded-lg mb-3">
                 <i class="ph-fill ph-credit-card text-2xl"></i>
             </div>
-            <div class="stat-label text-muted text-sm font-semibold uppercase">Monthly Passes</div>
+            <div class="stat-label text-muted text-sm font-semibold uppercase">Doanh thu Vé tháng</div>
             <div class="stat-value text-3xl font-black mt-1">{{ $monthlyRevenue }} đ</div>
             <div class="text-muted text-xs mt-2">
-                <span class="text-green-500 font-bold">{{ $monthlyPercent }}%</span> of total
+                <span class="text-green-500 font-bold">{{ $monthlyPercent }}%</span> tổng doanh thu
             </div>
         </x-card>
 
@@ -93,16 +93,16 @@
             <div class="icon-box bg-orange-100 text-orange-600 w-12 h-12 flex items-center justify-center rounded-lg mb-3">
                 <i class="ph-fill ph-ticket text-2xl"></i>
             </div>
-            <div class="stat-label text-muted text-sm font-semibold uppercase">Casual Tickets</div>
+            <div class="stat-label text-muted text-sm font-semibold uppercase">Doanh thu Vé lượt</div>
             <div class="stat-value text-3xl font-black mt-1">{{ $casualRevenue }} đ</div>
             <div class="text-muted text-xs mt-2">
-                <span class="text-orange-500 font-bold">{{ $casualPercent }}%</span> of total
+                <span class="text-orange-500 font-bold">{{ $casualPercent }}%</span> tổng doanh thu
             </div>
         </x-card>
     </div>
 
     <x-card class="p-6 var(--bg-color) rounded-xl shadow-sm border border-header-border mt-6">
-        <h3 class="text-xl font-bold var(--text-main) mb-6">Revenue Trend</h3>
+        <h3 class="text-xl font-bold var(--text-main) mb-6">Xu hướng doanh thu</h3>
         <div id="revenueChart" class="w-full h-[350px]"></div>
     </x-card>
 
@@ -113,16 +113,21 @@
             const chartDates = {!! json_encode($chartDates) !!};
             const chartTotals = {!! json_encode($chartTotals) !!};
 
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const textColor = isDark ? '#f8fafc' : '#1e293b';
+            const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
             const options = {
                 series: [{
-                    name: 'Revenue (VNĐ)',
+                    name: 'Doanh thu',
                     data: chartTotals
                 }],
                 chart: {
                     type: 'area',
                     height: 350,
                     fontFamily: 'inherit',
-                    toolbar: { show: false }
+                    toolbar: { show: false },
+                    background: 'transparent'
                 },
                 colors: ['#6366f1'], // Màu chủ đạo (var(--accent-primary))
                 dataLabels: { enabled: false },
@@ -130,14 +135,32 @@
                     curve: 'smooth',
                     width: 3
                 },
+                grid: {
+                    borderColor: gridColor,
+                    strokeDashArray: 4,
+                },
                 xaxis: {
                     categories: chartDates,
-                    type: 'datetime' // Tự động format ngày ở trục X
+                    type: 'datetime', // Tự động format ngày ở trục X
+                    labels: {
+                        style: { colors: textColor }
+                    },
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
                 },
                 yaxis: {
                     labels: {
+                        style: { colors: textColor },
                         formatter: function (value) {
                             return new Intl.NumberFormat('vi-VN').format(value) +" đ";
+                        }
+                    }
+                },
+                tooltip: {
+                    theme: isDark ? 'dark' : 'light',
+                    y: {
+                        formatter: function (value) {
+                            return new Intl.NumberFormat('vi-VN').format(value) + " đ";
                         }
                     }
                 },
@@ -154,6 +177,20 @@
 
             const chart = new ApexCharts(document.querySelector("#revenueChart"), options);
             chart.render();
+
+            // Listen for theme switch to update chart colors dynamically
+            document.getElementById('themeToggle')?.addEventListener('change', function(e) {
+                const newTextColor = e.target.checked ? '#f8fafc' : '#1e293b';
+                const newGridColor = e.target.checked ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+                const newTheme = e.target.checked ? 'dark' : 'light';
+                
+                chart.updateOptions({
+                    grid: { borderColor: newGridColor },
+                    xaxis: { labels: { style: { colors: newTextColor } } },
+                    yaxis: { labels: { style: { colors: newTextColor } } },
+                    tooltip: { theme: newTheme }
+                });
+            });
         });
     </script>
 @endsection

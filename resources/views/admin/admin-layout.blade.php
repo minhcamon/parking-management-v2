@@ -100,7 +100,7 @@
             <div class="dropdown-menu w-full" id="userProfileMenu">
                 <div class="dropdown-item">
                     <span class="flex items-center gap-2">
-                        <i class="ph ph-moon"></i> Dark Mode
+                        <i class="ph ph-moon"></i> Chế độ tối
                     </span>
                     <label class="theme-switch">
                         <input type="checkbox" id="themeToggle">
@@ -110,14 +110,14 @@
                 <div class="dropdown-divider"></div>
                 <a href="#" class="dropdown-item">
                     <span class="flex items-center gap-2">
-                        <i class="ph ph-gear"></i> Settings
+                        <i class="ph ph-gear"></i> Cài đặt
                     </span>
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="m-0">
                     @csrf
                     <button type="submit" class="dropdown-item text-red-500 bg-transparent border-none w-full text-left">
                         <span class="flex items-center gap-2">
-                            <i class="ph ph-sign-out"></i> Logout
+                            <i class="ph ph-sign-out"></i> Đăng xuất
                         </span>
                     </button>
                 </form>
@@ -132,7 +132,7 @@
                 <button class="mobile-toggle" id="mobileToggle">
                     <i class="ph ph-list"></i>
                 </button>
-                <div class="header-title">@yield('page-title', 'Overview')</div>
+                <div class="header-title">@yield('page-title', 'Tổng quan')</div>
             </div>
         </header>
 

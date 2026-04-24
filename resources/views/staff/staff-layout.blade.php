@@ -167,16 +167,16 @@
             
             <nav class="staff-nav ml-6">
                 <a href="{{ route('staff.dashboard') }}" class="staff-nav-item {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
-                    <i class="ph ph-qr-code"></i> Check In / Out
+                    <i class="ph ph-qr-code"></i> Vào / Ra bãi
                 </a>
                 <a href="{{ route('staff.operations.search') }}" class="staff-nav-item {{ request()->routeIs('staff.operations.search*') ? 'active' : '' }}">
-                    <i class="ph ph-magnifying-glass"></i> Search
+                    <i class="ph ph-magnifying-glass"></i> Tra cứu
                 </a>
                 <a href="{{ route('staff.operations.register-pass') }}" class="staff-nav-item {{ request()->routeIs('staff.operations.register-pass*') ? 'active' : '' }}">
-                    <i class="ph ph-identification-card"></i> Register Pass
+                    <i class="ph ph-identification-card"></i> Đăng ký Vé tháng
                 </a>
                 <a href="{{ route('staff.history.index') }}" class="staff-nav-item {{ request()->routeIs('staff.history.*') ? 'active' : '' }}">
-                    <i class="ph ph-clock-counter-clockwise"></i> History
+                    <i class="ph ph-clock-counter-clockwise"></i> Lịch sử
                 </a>
                 @if(Auth::user()->role === 'admin')
                     <a href="{{ route('admin.dashboard') }}" class="staff-nav-item text-accent-secondary">

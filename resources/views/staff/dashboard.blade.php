@@ -189,12 +189,12 @@
             <button class="tab-btn"
                     :class="mode === 'checkin' ? 'active-in' : ''"
                     @click="mode = 'checkin'; $nextTick(() => $refs.scanInput.focus())">
-                <i class="ph-fill ph-arrow-circle-right"></i> CHECK IN
+                <i class="ph-fill ph-arrow-circle-right"></i> VÀO BÃI
             </button>
             <button class="tab-btn"
                     :class="mode === 'checkout' ? 'active-out' : ''"
                     @click="mode = 'checkout'; $nextTick(() => $refs.scanInput.focus())">
-                <i class="ph-fill ph-arrow-circle-left"></i> CHECK OUT
+                <i class="ph-fill ph-arrow-circle-left"></i> RA BÃI
             </button>
         </div>
 
@@ -323,9 +323,17 @@
                             </div>
 
                             <div class="grow">
-                                <div class="font-medium text-main">{{ $activity['plate'] }}</div>
+                                <div class="font-medium text-main flex items-center gap-2">
+                                    {{ $activity['plate'] }}
+                                    @if($activity['is_monthly'])
+                                        <span class="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-500 rounded text-[0.65rem] font-black uppercase tracking-wider border border-indigo-500/20">Vé tháng</span>
+                                    @endif
+                                </div>
                                 <div class="text-[0.8rem] text-muted mt-0.5">
                                     {{$activity['rfid']  }} • {{ $activity['vehicle'] }}
+                                    @if($activity['is_monthly'] && $activity['monthly_customer_name'])
+                                        <br><span class="text-accent italic opacity-80">Khách: {{ $activity['monthly_customer_name'] }}</span>
+                                    @endif
                                 </div>
                             </div>
 

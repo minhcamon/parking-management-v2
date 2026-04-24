@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained('parking_sessions');
+            $table->foreignId('session_id')->nullable()->constrained('parking_sessions');
             $table->foreignId('monthly_pass_id')->nullable()->constrained('monthly_passes');
             $table->decimal('amount', 10, 2);
             $table->dateTime('payment_time')->nullable();

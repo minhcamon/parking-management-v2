@@ -49,12 +49,12 @@
         <table class="w-full border-collapse text-left">
             <thead>
                 <tr class="border-b-2 border-header-border text-muted text-sm uppercase tracking-[0.5px]">
-                    <th class="p-4">Time</th>
-                    <th class="p-4">Type</th>
-                    <th class="p-4">Card ID</th>
-                    <th class="p-4">License Plate</th>
-                    <th class="p-4">Amount</th>
-                    <th class="p-4">Operator</th>
+                    <th class="p-4">Thời gian</th>
+                    <th class="p-4">Loại vé</th>
+                    <th class="p-4">Mã thẻ RFID</th>
+                    <th class="p-4">Biển số xe</th>
+                    <th class="p-4">Số tiền</th>
+                    <th class="p-4">Nhân viên</th>
                 </tr>
             </thead>
             <tbody>

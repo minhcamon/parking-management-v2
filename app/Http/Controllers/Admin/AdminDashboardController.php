@@ -19,8 +19,10 @@ class AdminDashboardController extends Controller
      */
     public function getDashboard()
     {
-        // 1. Total Revenue: Sum of all transaction amounts
-        $totalRevenue = Transactions::sum('amount');
+        // 1. Total Revenue: Sum of this month's transaction amounts
+        $totalRevenue = Transactions::whereMonth('payment_time', now()->month)
+                                    ->whereYear('payment_time', now()->year)
+                                    ->sum('amount');
 
         // 2. Card Manager: Total count (Moved to slots area, Preview removed)
         $totalCards = Cards::count();
@@ -37,8 +39,11 @@ class AdminDashboardController extends Controller
             $type->slot_remain = $type->total_slots - $type->parked_count;
         });
         // 4. Ticket Distribution Chart Data (Monthly vs Casual from Transactions)
+        // Casual: number of casual parking sessions (from transactions)
         $casualTickets = Transactions::whereNull('monthly_pass_id')->count();
+        // Monthly: number of monthly pass purchases
         $monthlyTickets = Transactions::whereNotNull('monthly_pass_id')->count();
+        
         $chartData = [
             'casual' => $casualTickets,
             'monthly' => $monthlyTickets
